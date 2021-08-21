@@ -82,7 +82,6 @@ const Home: React.FC = (): ReactElement => {
     });
 
     socket.on('login', (teste) => {
-      console.log('login', teste);
       setUsers(teste.users);
     });
   }, [users]);
