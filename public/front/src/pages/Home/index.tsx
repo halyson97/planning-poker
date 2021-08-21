@@ -10,7 +10,9 @@ import ListUsers from './ListUsers';
 import { defaultCards } from './cards';
 import Buttons from './Buttons';
 
-const socket = io('http://localhost:8000');
+import config from '../../config/config';
+
+const socket = io(config.urlServer);
 
 const Home: React.FC = (): ReactElement => {
   const [users, setUsers] = React.useState<User[]>([]);
