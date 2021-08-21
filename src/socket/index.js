@@ -2,14 +2,11 @@ let users = [];
 let numUsers = 0;
 
 module.exports = function(socket) {
-    console.log('a user connected');
 
     let addedUser = false;
 
     socket.on('add user', (user) => {
         if (addedUser) return;
-
-        console.log('add user')
     
         // we store the username in the socket session for this client
         socket.user = user;
@@ -28,9 +25,6 @@ module.exports = function(socket) {
     });
 
     socket.on('user vote', (userVote) => {
-        console.log('user vote')
-        console.log('user vote', userVote)
-        console.log(users)
         users = users.map(user => {
             if (user.id === userVote.id) {
                 return userVote;
