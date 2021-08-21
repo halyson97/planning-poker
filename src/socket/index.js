@@ -27,6 +27,26 @@ module.exports = function(socket) {
         });
     });
 
+    socket.on('user vote', (userVote) => {
+        console.log('user vote')
+        console.log('user vote', userVote)
+        console.log(users)
+        users = users.map(user => {
+            if (user.id === userVote.id) {
+                return userVote;
+            }
+            return user;
+        });
+        socket.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
+        socket.broadcast.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
+    });
+
     socket.on('disconnect', () => {
         if (addedUser) {
             --numUsers;

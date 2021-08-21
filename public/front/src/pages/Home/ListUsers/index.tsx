@@ -5,7 +5,6 @@ import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
   root: {
-    height: '50vh',
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
@@ -31,6 +30,10 @@ const useStyles = makeStyles({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
   },
+  card: {
+    background: '#7057de33',
+    borderColor: '#7057de',
+  },
 });
 
 interface Props {
@@ -44,7 +47,9 @@ const ListUsers: React.FC<Props> = ({ users }): ReactElement => {
     <div className={classes.root}>
       {users.map((user) => (
         <div key={user.id} className={classes.item}>
-          <div className={classes.itemCard}></div>
+          <div
+            className={`${classes.itemCard} ${user.card && classes.card}`}
+          ></div>
           <div className={classes.itemName}>{user.username}</div>
         </div>
       ))}
