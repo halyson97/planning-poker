@@ -22,6 +22,9 @@ const useStyles = makeStyles({
     height: '150px',
     border: '1px solid #cccccc',
     borderRadius: '8px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemName: {
     width: 100,
@@ -38,9 +41,10 @@ const useStyles = makeStyles({
 
 interface Props {
   users: User[];
+  show: boolean;
 }
 
-const ListUsers: React.FC<Props> = ({ users }): ReactElement => {
+const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
   const classes = useStyles();
 
   return (
@@ -48,8 +52,12 @@ const ListUsers: React.FC<Props> = ({ users }): ReactElement => {
       {users.map((user) => (
         <div key={user.id} className={classes.item}>
           <div
-            className={`${classes.itemCard} ${user.card && classes.card}`}
-          ></div>
+            className={`${classes.itemCard} ${
+              user.card && !show && classes.card
+            }`}
+          >
+            {show && user.card}
+          </div>
           <div className={classes.itemName}>{user.username}</div>
         </div>
       ))}

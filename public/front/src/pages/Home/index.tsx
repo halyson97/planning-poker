@@ -8,12 +8,14 @@ import AddUser from './AddUser';
 import Cards from './Cards';
 import ListUsers from './ListUsers';
 import { defaultCards } from './cards';
+import Buttons from './Buttons';
 
 const socket = io('http://localhost:8000');
 
 const Home: React.FC = (): ReactElement => {
   const [users, setUsers] = React.useState<User[]>([]);
   const [user, setUser] = React.useState<User>();
+  const [show, setShow] = React.useState(false);
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
@@ -46,6 +48,19 @@ const Home: React.FC = (): ReactElement => {
     setCards(newCards);
   };
 
+  const handleShow = () => socket.emit('show');
+
+  const handleClear = () => {
+    socket.emit('clear');
+    const newCards = cards.map((item) => {
+      // eslint-disable-next-line no-param-reassign
+      item.selected = false;
+      return item;
+    });
+    setCards(newCards);
+    setShow(false);
+  };
+
   React.useEffect(() => {
     const username = localStorage.getItem('username');
 
@@ -58,6 +73,10 @@ const Home: React.FC = (): ReactElement => {
       setUser(newUser);
     }
 
+    socket.on('show', () => {
+      setShow(true);
+    });
+
     socket.on('user left', (teste) => {
       setUsers(users.filter((user: User) => user.id !== teste.user.id));
     });
@@ -69,11 +88,21 @@ const Home: React.FC = (): ReactElement => {
   }, [users]);
 
   return (
-    <div>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100vh',
+      }}
+    >
       {!user && <AddUser onSubmit={handleJoin} />}
       {/* Users: {users.map((item) => `${item.username} || `)} */}
 
-      <ListUsers users={users} />
+      <ListUsers users={users} show={show} />
+      <Buttons handleShow={handleShow} handleClear={handleClear} />
       <Cards cards={cards} onClick={handleClickCard} />
     </div>
   );

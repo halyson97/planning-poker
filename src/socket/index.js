@@ -47,6 +47,28 @@ module.exports = function(socket) {
         });
     });
 
+    socket.on('show', () => {
+        socket.emit('show');
+        socket.broadcast.emit('show');
+    });
+
+    socket.on('clear', () => {
+        users = users.map(user => {
+            return {
+                ...user,
+                card: null,
+            };
+        });
+        socket.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
+        socket.broadcast.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
+    });
+
     socket.on('disconnect', () => {
         if (addedUser) {
             --numUsers;
