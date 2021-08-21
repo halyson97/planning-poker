@@ -1,15 +1,12 @@
 import React, { ReactElement } from 'react';
 import { io } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
+import { User } from '../../interfaces/user';
 
 import AddUser from './AddUser';
+import ListUsers from './ListUsers';
 
 const socket = io('http://localhost:8000');
-
-interface User {
-  username: string;
-  id: string;
-}
 
 const Home: React.FC = (): ReactElement => {
   const [users, setUsers] = React.useState<User[]>([]);
@@ -59,7 +56,9 @@ const Home: React.FC = (): ReactElement => {
   return (
     <div>
       {!user && <AddUser onSubmit={handleJoin} />}
-      Users: {users.map((item) => `${item.username} || `)}
+      {/* Users: {users.map((item) => `${item.username} || `)} */}
+
+      <ListUsers users={users} />
     </div>
   );
 };
