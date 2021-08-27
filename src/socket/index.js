@@ -61,6 +61,9 @@ module.exports = function(socket) {
             numUsers: numUsers,
             users,
         });
+        socket.broadcast.emit('clear', {
+            clear: true
+        });
     });
 
     socket.on('disconnect', () => {

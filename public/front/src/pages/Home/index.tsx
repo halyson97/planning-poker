@@ -79,6 +79,10 @@ const Home: React.FC = (): ReactElement => {
       setShow(true);
     });
 
+    socket.on('clear', () => {
+      setShow(false);
+    });
+
     socket.on('user left', (teste) => {
       setUsers(users.filter((user: User) => user.id !== teste.user.id));
     });
