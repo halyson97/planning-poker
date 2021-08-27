@@ -81,6 +81,12 @@ const Home: React.FC = (): ReactElement => {
 
     socket.on('clear', () => {
       setShow(false);
+      const newCards = cards.map((item) => {
+        // eslint-disable-next-line no-param-reassign
+        item.selected = false;
+        return item;
+      });
+      setCards(newCards);
     });
 
     socket.on('user left', (teste) => {
