@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { User } from '../../../interfaces/user';
 
@@ -50,16 +51,23 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
   return (
     <div className={classes.root}>
       {users.map((user) => (
-        <div key={user.id} className={classes.item}>
-          <div
-            className={`${classes.itemCard} ${
-              user.card && !show && classes.card
-            }`}
-          >
-            {show && user.card}
+        <Tooltip
+          open={!!user.message}
+          title={`${user.message}`}
+          arrow
+          key={user.id}
+        >
+          <div className={classes.item}>
+            <div
+              className={`${classes.itemCard} ${
+                user.card && !show && classes.card
+              }`}
+            >
+              {show && user.card}
+            </div>
+            <div className={classes.itemName}>{user.username}</div>
           </div>
-          <div className={classes.itemName}>{user.username}</div>
-        </div>
+        </Tooltip>
       ))}
     </div>
   );

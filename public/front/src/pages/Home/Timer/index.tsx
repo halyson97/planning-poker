@@ -15,7 +15,7 @@ interface Props {
   callback: () => void;
 }
 
-const ListUsers: React.FC<Props> = ({ callback }): ReactElement => {
+const Timer: React.FC<Props> = ({ callback }): ReactElement => {
   const classes = useStyles();
 
   const [time, setTime] = React.useState(3);
@@ -38,4 +38,4 @@ const ListUsers: React.FC<Props> = ({ callback }): ReactElement => {
   return <div className={classes.root}>{time}</div>;
 };
 
-export default ListUsers;
+export default Timer;

@@ -54,7 +54,7 @@ const Home: React.FC = (): ReactElement => {
 
   const handleShow = () => {
     if (!show) {
-      socket.emit('show');
+      socket.emit('show', user);
     }
   };
 
@@ -67,6 +67,7 @@ const Home: React.FC = (): ReactElement => {
     });
     setCards(newCards);
     setShow(false);
+    setShowTimer(false);
   };
 
   React.useEffect(() => {
@@ -87,6 +88,7 @@ const Home: React.FC = (): ReactElement => {
 
     socket.on('clear', () => {
       setShow(false);
+      setShowTimer(false);
       const newCards = cards.map((item) => {
         // eslint-disable-next-line no-param-reassign
         item.selected = false;
@@ -116,7 +118,6 @@ const Home: React.FC = (): ReactElement => {
       }}
     >
       {!user && <AddUser onSubmit={handleJoin} />}
-      {/* Users: {users.map((item) => `${item.username} || `)} */}
 
       <ListUsers users={users} show={show} />
       <div>

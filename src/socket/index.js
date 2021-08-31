@@ -1,6 +1,8 @@
 let users = [];
 let numUsers = 0;
 
+const messages = require('./messages');
+
 module.exports = function(socket) {
 
     let addedUser = false;
@@ -41,9 +43,29 @@ module.exports = function(socket) {
         });
     });
 
-    socket.on('show', () => {
+    socket.on('show', (userShow) => {
         socket.emit('show');
         socket.broadcast.emit('show');
+
+        const message = messages[Math.floor(Math.random()*messages.length)];
+
+        users = users.map(user => {
+            if (user.id === userShow.id) {
+                return {
+                    ...user,
+                    message,
+                };
+            }
+            return user;
+        });
+        socket.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
+        socket.broadcast.emit('login', {
+            numUsers: numUsers,
+            users,
+        });
     });
 
     socket.on('clear', () => {
@@ -51,6 +73,7 @@ module.exports = function(socket) {
             return {
                 ...user,
                 card: null,
+                message: '',
             };
         });
         socket.emit('login', {
