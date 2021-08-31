@@ -7,15 +7,16 @@ const useStyles = makeStyles({
   root: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    maxWidth: 1200,
   },
   item: {
     width: '75px',
     border: '1px solid #cccccc',
     height: '100px',
     borderRadius: '8px',
-    margin: 10,
+    margin: '10px 3px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

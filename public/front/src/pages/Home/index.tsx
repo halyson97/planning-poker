@@ -9,6 +9,7 @@ import Cards from './Cards';
 import ListUsers from './ListUsers';
 import { defaultCards } from './cards';
 import Buttons from './Buttons';
+import Timer from './Timer';
 
 import config from '../../config/config';
 
@@ -18,6 +19,7 @@ const Home: React.FC = (): ReactElement => {
   const [users, setUsers] = React.useState<User[]>([]);
   const [user, setUser] = React.useState<User>();
   const [show, setShow] = React.useState(false);
+  const [showTimer, setShowTimer] = React.useState(false);
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
@@ -50,7 +52,11 @@ const Home: React.FC = (): ReactElement => {
     setCards(newCards);
   };
 
-  const handleShow = () => socket.emit('show');
+  const handleShow = () => {
+    if (!show) {
+      socket.emit('show');
+    }
+  };
 
   const handleClear = () => {
     socket.emit('clear');
@@ -76,7 +82,7 @@ const Home: React.FC = (): ReactElement => {
     }
 
     socket.on('show', () => {
-      setShow(true);
+      setShowTimer(true);
     });
 
     socket.on('clear', () => {
@@ -113,7 +119,23 @@ const Home: React.FC = (): ReactElement => {
       {/* Users: {users.map((item) => `${item.username} || `)} */}
 
       <ListUsers users={users} show={show} />
-      <Buttons handleShow={handleShow} handleClear={handleClear} />
+      <div>
+        <div
+          style={{
+            height: 45,
+          }}
+        >
+          {showTimer && (
+            <Timer
+              callback={() => {
+                setShow(true);
+                setShowTimer(false);
+              }}
+            />
+          )}
+        </div>
+        <Buttons handleShow={handleShow} handleClear={handleClear} />
+      </div>
       <Cards cards={cards} onClick={handleClickCard} />
     </div>
   );
