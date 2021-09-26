@@ -1,5 +1,5 @@
 export default {
   urlServer: window.location.href.match('localhost')
     ? 'http://localhost:8000'
-    : 'https://planning-poker-brabos.herokuapp.com/',
+    : 'http://18.231.168.146',
 };
