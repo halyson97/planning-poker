@@ -7,7 +7,7 @@ const schedules = () => {
 
     cron.schedule(everyFifteenMinutes, async () => {
         try{
-            await axios.get('https://planning-poker-brabos.herokuapp.com/validate');
+            // await axios.get('https://planning-poker-brabos.herokuapp.com/validate');
             console.log('sucesso')
         }catch(e){
             console.log('erro');
