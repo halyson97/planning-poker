@@ -3,6 +3,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { User } from '../../../interfaces/user';
+import { getCard } from './cards';
+
+const cardBack = getCard();
 
 const useStyles = makeStyles({
   root: {
@@ -36,7 +39,9 @@ const useStyles = makeStyles({
   },
   card: {
     background: '#7057de33',
-    borderColor: '#7057de',
+    backgroundImage: `url(${cardBack})`,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
   },
 });
 
