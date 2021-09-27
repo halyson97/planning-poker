@@ -2,6 +2,8 @@ import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import ReactCardFlip from 'react-card-flip';
+
 import { User } from '../../../interfaces/user';
 import { getCard } from './cards';
 
@@ -63,13 +65,13 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
           key={user.id}
         >
           <div className={classes.item}>
-            <div
-              className={`${classes.itemCard} ${
-                user.card && !show && classes.card
-              }`}
-            >
-              {show && user.card}
-            </div>
+            <ReactCardFlip isFlipped={show} flipDirection="horizontal">
+              <div
+                className={`${classes.itemCard} ${user.card && classes.card}`}
+              ></div>
+              <div className={classes.itemCard}>{show && user.card}</div>
+            </ReactCardFlip>
+
             <div className={classes.itemName}>{user.username}</div>
           </div>
         </Tooltip>
