@@ -1,7 +1,7 @@
 let users = [];
 let numUsers = 0;
 
-const messages = require('./messages');
+const getMessages = require('./messages');
 
 module.exports = function(socket) {
 
@@ -47,10 +47,11 @@ module.exports = function(socket) {
         socket.emit('show');
         socket.broadcast.emit('show');
 
-        const message = messages[Math.floor(Math.random()*messages.length)];
-
+        
         users = users.map(user => {
             if (user.id === userShow.id) {
+                const messages = getMessages(user.username);
+                const message = messages[Math.floor(Math.random()*messages.length)];
                 return {
                     ...user,
                     message,
