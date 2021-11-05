@@ -10,6 +10,8 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
     maxWidth: 1200,
+    padding: '0px 10px',
+    boxSizing: 'border-box',
   },
   item: {
     width: '75px',

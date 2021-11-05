@@ -34,22 +34,13 @@ const Home: React.FC = (): ReactElement => {
   };
 
   const handleClickCard = (card: Card) => {
-    const newCards = cards.map((item) => {
-      // eslint-disable-next-line no-param-reassign
-      item.selected = card.value === item.value;
-      return item;
-    });
-
-    if (user) {
-      const newUser: User = {
-        ...user,
-        card: card.value,
-      };
-      socket.emit('user vote', newUser);
-      setUser(newUser);
-    }
+    const newCards = cards.map((item) => ({
+      ...item,
+      selected: card.value === item.value,
+    }));
 
     setCards(newCards);
+    socket.emit('user vote', card.value);
   };
 
   const handleShow = () => {
@@ -61,9 +52,10 @@ const Home: React.FC = (): ReactElement => {
   const handleClear = () => {
     socket.emit('clear');
     const newCards = cards.map((item) => {
-      // eslint-disable-next-line no-param-reassign
-      item.selected = false;
-      return item;
+      return {
+        ...item,
+        selected: false,
+      };
     });
     setCards(newCards);
     setShow(false);
@@ -90,15 +82,16 @@ const Home: React.FC = (): ReactElement => {
       setShow(false);
       setShowTimer(false);
       const newCards = cards.map((item) => {
-        // eslint-disable-next-line no-param-reassign
-        item.selected = false;
-        return item;
+        return {
+          ...item,
+          selected: false,
+        };
       });
       setCards(newCards);
     });
 
     socket.on('user left', (teste) => {
-      setUsers(users.filter((user: User) => user.id !== teste.user.id));
+      setUsers(teste.users);
     });
 
     socket.on('login', (teste) => {
@@ -115,6 +108,7 @@ const Home: React.FC = (): ReactElement => {
         flexDirection: 'column',
         width: '100%',
         height: '100vh',
+        userSelect: 'none',
       }}
     >
       {!user && <AddUser onSubmit={handleJoin} />}
