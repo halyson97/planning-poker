@@ -71,6 +71,9 @@ const Home: React.FC = (): ReactElement => {
   };
 
   React.useEffect(() => {
+    if (!localStorage.getItem('isPlayer')) {
+      localStorage.removeItem('username');
+    }
     const username = localStorage.getItem('username');
     const isPlayer = localStorage.getItem('isPlayer') === 'true';
 
