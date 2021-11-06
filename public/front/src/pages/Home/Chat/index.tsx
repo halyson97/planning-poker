@@ -38,6 +38,7 @@ const useStyles = makeStyles({
   contentMessages: {
     height: 'calc(100vh - 110px)',
     overflowY: 'auto',
+    width: 350,
   },
   contentMessage: {
     padding: '5px 10px',
@@ -55,6 +56,7 @@ const useStyles = makeStyles({
   },
   message: {
     fontSize: '0.8rem',
+    wordWrap: 'break-word',
   },
 
   contentInput: {
