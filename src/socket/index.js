@@ -1,5 +1,6 @@
 const state = {
     users: [],
+    messages: [],
     numUsers: 0,
 };
 
@@ -83,6 +84,18 @@ module.exports = function(socket) {
         socket.broadcast.emit('login', state);
     })
 
+    socket.on('send message', (message) =>{
+        state.messages.push({
+            user: socket.user.username,
+            text: message,
+            id: socket.user.id,
+            date: new Date(),
+        });
+
+        socket.emit('messages', state.messages);
+        socket.broadcast.emit('messages', state.messages);
+    });
+
     socket.on('disconnect', () => {
         if (addedUser) {
             --state.numUsers;
@@ -94,6 +107,10 @@ module.exports = function(socket) {
                 users: state.users,
                 numUsers: state.numUsers
             });
+
+            if(!state.numUsers) {
+                state.messages = [];
+            }
         }
     });
 }

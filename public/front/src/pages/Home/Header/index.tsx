@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    position: 'fixed',
+    position: 'absolute',
     padding: 20,
     boxSizing: 'border-box',
     top: 0,

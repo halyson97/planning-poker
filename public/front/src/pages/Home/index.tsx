@@ -14,6 +14,7 @@ import Timer from './Timer';
 
 import config from '../../config/config';
 import ListNoUsers from './ListNoUsers';
+import Chat from './Chat';
 
 const socket = io(config.urlServer);
 
@@ -22,6 +23,9 @@ const Home: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();
   const [show, setShow] = React.useState(false);
   const [showTimer, setShowTimer] = React.useState(false);
+  const [openChat, setOpenChat] = React.useState(false);
+  const [notificationChat, setNotificationChat] = React.useState(false);
+  const [messages, setMessages] = React.useState([]);
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
@@ -107,8 +111,14 @@ const Home: React.FC = (): ReactElement => {
       setUsers(teste.users);
     });
 
+    socket.on('messages', (messages) => {
+      setMessages(messages);
+      setNotificationChat(true);
+    });
+
     socket.on('login', (teste) => {
       setUsers(teste.users);
+      setMessages(teste.messages);
       const newUser = teste.users.find((item: User) => item.id === user?.id);
       if (newUser) {
         setUser(newUser);
@@ -116,51 +126,69 @@ const Home: React.FC = (): ReactElement => {
     });
   }, [users]);
 
+  const handleOpenChat = () => {
+    setOpenChat(!openChat);
+    setNotificationChat(false);
+  };
+
+  const handleSubmitChat = (message: string): void => {
+    socket.emit('send message', message);
+  };
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        flexDirection: 'column',
-        width: '100%',
-        height: '100vh',
-        userSelect: 'none',
-        position: 'relative',
-      }}
-    >
-      {!user && <AddUser onSubmit={handleJoin} />}
-      <Header checked={!!user?.isPlayer} onChange={handleChangeIsPlayer} />
+    <div style={{ display: 'flex', position: 'relative' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          flexDirection: 'column',
+          width: '100%',
+          height: '100vh',
+          userSelect: 'none',
+          position: 'relative',
+        }}
+      >
+        {!user && <AddUser onSubmit={handleJoin} />}
+        <Header checked={!!user?.isPlayer} onChange={handleChangeIsPlayer} />
 
-      {filterUsers(users, false).length > 0 && (
-        <ListNoUsers users={filterUsers(users, false)} />
-      )}
+        {filterUsers(users, false).length > 0 && (
+          <ListNoUsers users={filterUsers(users, false)} />
+        )}
 
-      <ListUsers users={filterUsers(users)} show={show} />
-      <div>
-        <div
-          style={{
-            height: 45,
-          }}
-        >
-          {showTimer && (
-            <Timer
-              callback={() => {
-                setShow(true);
-                setShowTimer(false);
-              }}
+        <ListUsers users={filterUsers(users)} show={show} />
+        <div>
+          <div
+            style={{
+              height: 45,
+            }}
+          >
+            {showTimer && (
+              <Timer
+                callback={() => {
+                  setShow(true);
+                  setShowTimer(false);
+                }}
+              />
+            )}
+          </div>
+          {Boolean(filterUsers(users).length) && (
+            <Buttons
+              handleShow={handleShow}
+              handleClear={handleClear}
+              disabled={!user?.isPlayer}
             />
           )}
         </div>
-        {Boolean(filterUsers(users).length) && (
-          <Buttons
-            handleShow={handleShow}
-            handleClear={handleClear}
-            disabled={!user?.isPlayer}
-          />
-        )}
+        {!!user?.isPlayer && <Cards cards={cards} onClick={handleClickCard} />}
       </div>
-      {!!user?.isPlayer && <Cards cards={cards} onClick={handleClickCard} />}
+      <Chat
+        open={openChat}
+        handleOpen={handleOpenChat}
+        onSubmit={handleSubmitChat}
+        messages={messages}
+        notification={notificationChat}
+      />
     </div>
   );
 };
