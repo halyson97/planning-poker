@@ -52,7 +52,7 @@ const Home: React.FC = (): ReactElement => {
   };
 
   const handleShow = () => {
-    if (!show) {
+    if (!show && !showTimer) {
       socket.emit('show', user);
     }
   };
