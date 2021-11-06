@@ -6,6 +6,7 @@ import ReactCardFlip from 'react-card-flip';
 
 import { User } from '../../../interfaces/user';
 import { getCard } from './cards';
+import NotUsers from './NotUsers';
 
 const cardBack = getCard();
 
@@ -76,6 +77,7 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
           </div>
         </Tooltip>
       ))}
+      {!users.length && <NotUsers />}
     </div>
   );
 };

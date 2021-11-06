@@ -2,10 +2,6 @@ import { Card } from '../../interfaces/cards';
 
 export const defaultCards: Card[] = [
   {
-    value: '0',
-    selected: false,
-  },
-  {
     value: '1',
     selected: false,
   },
@@ -27,14 +23,6 @@ export const defaultCards: Card[] = [
   },
   {
     value: '6',
-    selected: false,
-  },
-  {
-    value: '7',
-    selected: false,
-  },
-  {
-    value: '8',
     selected: false,
   },
   {

@@ -19,25 +19,49 @@ const useStyles = makeStyles({
     alignItems: 'center',
     cursor: 'pointer',
   },
+  disabled: {
+    color: '#999',
+    cursor: 'not-allowed',
+  },
 });
 
 interface Props {
   handleShow: () => void;
   handleClear: () => void;
+  disabled?: boolean;
 }
 
 const Buttons: React.FC<Props> = ({
   handleShow,
   handleClear,
+  disabled,
 }): ReactElement => {
   const classes = useStyles();
 
+  const handleClickShow = (): void => {
+    if (!disabled) {
+      handleShow();
+    }
+  };
+
+  const handleClickClear = (): void => {
+    if (!disabled) {
+      handleClear();
+    }
+  };
+
   return (
     <div className={classes.root}>
-      <div onClick={handleShow} className={classes.button}>
+      <div
+        onClick={handleClickShow}
+        className={`${classes.button} ${disabled && classes.disabled}`}
+      >
         Virar
       </div>
-      <div onClick={handleClear} className={classes.button}>
+      <div
+        onClick={handleClickClear}
+        className={`${classes.button} ${disabled && classes.disabled}`}
+      >
         Limpar
       </div>
     </div>
