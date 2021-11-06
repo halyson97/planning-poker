@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { FormControlLabel, TextField, Button, Switch } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -10,17 +11,15 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     background: '#fff',
+    zIndex: 1000,
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
   },
   input: {
-    width: '200px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    padding: '10px',
-    marginBottom: '20px',
+    width: '100%',
+    marginBottom: '10px',
   },
   button: {
     height: '35px',
@@ -29,35 +28,55 @@ const useStyles = makeStyles({
     color: '#fff',
     background: '#7057de',
     cursor: 'pointer',
+    marginTop: '10px',
   },
 });
 
 interface Props {
-  onSubmit: (name: string) => void;
+  onSubmit: (name: string, isPlayer: boolean) => void;
 }
 
 const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
   const classes = useStyles();
 
   const [name, setName] = React.useState('');
+  const [isPlayer, setIsPlayer] = React.useState(true);
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    onSubmit(name);
+    onSubmit(name, isPlayer);
   };
   return (
     <div className={classes.root}>
       <form onSubmit={handleSubmit} className={classes.form}>
-        <input
+        <TextField
           type="text"
-          placeholder="username"
+          placeholder="Username"
+          label="Username"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className={classes.input}
           required
+          variant="outlined"
+          className={classes.input}
         />
-        <button className={classes.button} type="submit">
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isPlayer}
+              onChange={(event) => setIsPlayer(event.target.checked)}
+            />
+          }
+          label="Jogador"
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          className={classes.button}
+        >
           Entrar
-        </button>
+        </Button>
       </form>
     </div>
   );

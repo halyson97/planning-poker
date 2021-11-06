@@ -9,9 +9,11 @@ import Cards from './Cards';
 import ListUsers from './ListUsers';
 import { defaultCards } from './cards';
 import Buttons from './Buttons';
+import Header from './Header';
 import Timer from './Timer';
 
 import config from '../../config/config';
+import ListNoUsers from './ListNoUsers';
 
 const socket = io(config.urlServer);
 
@@ -23,12 +25,14 @@ const Home: React.FC = (): ReactElement => {
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
-  const handleJoin = (name: string): void => {
+  const handleJoin = (name: string, isPlayer: boolean): void => {
     const newUser: User = {
       username: name,
+      isPlayer,
       id: uuid(),
     };
     localStorage.setItem('username', name);
+    localStorage.setItem('isPlayer', isPlayer ? 'true' : 'false');
     socket.emit('add user', newUser);
     setUser(newUser);
   };
@@ -51,27 +55,36 @@ const Home: React.FC = (): ReactElement => {
 
   const handleClear = () => {
     socket.emit('clear');
-    const newCards = cards.map((item) => {
-      return {
-        ...item,
-        selected: false,
-      };
-    });
-    setCards(newCards);
-    setShow(false);
-    setShowTimer(false);
+  };
+
+  const handleChangeIsPlayer = (value: boolean) => {
+    socket.emit('changeIsPlayer', value);
+    localStorage.setItem('isPlayer', value ? 'true' : 'false');
+  };
+
+  const filterUsers = (users: User[], isPlayer = true): User[] => {
+    return users.filter((user) => user.isPlayer === isPlayer);
   };
 
   React.useEffect(() => {
     const username = localStorage.getItem('username');
+    const isPlayer = localStorage.getItem('isPlayer') === 'true';
 
-    if (username || user) {
+    if (username && !user) {
       const newUser: User = {
-        username: username || user?.username || '',
-        id: user?.id || uuid(),
+        username: username || '',
+        isPlayer,
+        id: uuid(),
+        card: undefined,
       };
-      socket.emit('add user', newUser);
       setUser(newUser);
+      socket.emit('add user', newUser);
+    }
+
+    if (user) {
+      const newUser = users.find((item) => item.id === user.id);
+      setUser(newUser);
+      socket.emit('add user', newUser);
     }
 
     socket.on('show', () => {
@@ -96,6 +109,10 @@ const Home: React.FC = (): ReactElement => {
 
     socket.on('login', (teste) => {
       setUsers(teste.users);
+      const newUser = teste.users.find((item: User) => item.id === user?.id);
+      if (newUser) {
+        setUser(newUser);
+      }
     });
   }, [users]);
 
@@ -109,11 +126,17 @@ const Home: React.FC = (): ReactElement => {
         width: '100%',
         height: '100vh',
         userSelect: 'none',
+        position: 'relative',
       }}
     >
       {!user && <AddUser onSubmit={handleJoin} />}
+      <Header checked={!!user?.isPlayer} onChange={handleChangeIsPlayer} />
 
-      <ListUsers users={users} show={show} />
+      {filterUsers(users, false).length > 0 && (
+        <ListNoUsers users={filterUsers(users, false)} />
+      )}
+
+      <ListUsers users={filterUsers(users)} show={show} />
       <div>
         <div
           style={{
@@ -129,9 +152,15 @@ const Home: React.FC = (): ReactElement => {
             />
           )}
         </div>
-        <Buttons handleShow={handleShow} handleClear={handleClear} />
+        {Boolean(filterUsers(users).length) && (
+          <Buttons
+            handleShow={handleShow}
+            handleClear={handleClear}
+            disabled={!user?.isPlayer}
+          />
+        )}
       </div>
-      <Cards cards={cards} onClick={handleClickCard} />
+      {!!user?.isPlayer && <Cards cards={cards} onClick={handleClickCard} />}
     </div>
   );
 };

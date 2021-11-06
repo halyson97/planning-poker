@@ -26,7 +26,7 @@ module.exports = function(socket) {
         state.users = state.users.map(user => {
             if (user.id === socket.user.id) {
                 return {
-                    ...socket.user,
+                    ...user,
                     card,
                 };
             }
@@ -37,6 +37,9 @@ module.exports = function(socket) {
     });
 
     socket.on('show', (userShow) => {
+        socket.emit('show');
+        socket.broadcast.emit('show');
+
         state.users = state.users.map(user => {
             if (user.id === userShow.id) {
                 const messages = getMessages(user.username);
@@ -62,10 +65,23 @@ module.exports = function(socket) {
         });
         socket.emit('login', state);
         socket.broadcast.emit('login', state);
-        socket.broadcast.emit('clear', {
-            clear: true
-        });
+        socket.emit('clear');
+        socket.broadcast.emit('clear');
     });
+
+    socket.on('changeIsPlayer', (isPlayer) => {
+        state.users = state.users.map(user => {
+            if (user.id === socket.user.id) {
+                return {
+                    ...user,
+                    isPlayer,
+                };
+            }
+            return user;
+        });
+        socket.emit('login', state);
+        socket.broadcast.emit('login', state);
+    })
 
     socket.on('disconnect', () => {
         if (addedUser) {
