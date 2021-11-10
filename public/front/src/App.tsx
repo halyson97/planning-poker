@@ -1,15 +1,22 @@
 import React, { ReactElement } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 
-import Home from './pages/Home';
+import Room from './pages/Room';
 import NotFound from './pages/NotFound';
+import CreateRoom from './pages/CreateRoom';
 
 const App: React.FC = (): ReactElement => {
   return (
     <Router>
       <Switch>
         <Route exact path="/">
-          <Home />
+          <CreateRoom />
+        </Route>
+        <Route exact path="/create-room">
+          <CreateRoom />
+        </Route>
+        <Route exact path="/rooms/:roomId">
+          <Room />
         </Route>
         <Route path="*">
           <NotFound />

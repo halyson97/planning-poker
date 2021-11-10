@@ -1,33 +1,40 @@
 import React, { ReactElement } from 'react';
+import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
-import { Card } from '../../interfaces/cards';
-import { User } from '../../interfaces/user';
-
-import AddUser from './AddUser';
-import Cards from './Cards';
-import ListUsers from './ListUsers';
-import { defaultCards } from './cards';
-import Buttons from './Buttons';
-import Header from './Header';
-import Timer from './Timer';
 
 import config from '../../config/config';
+import { User } from '../../interfaces/user';
+import { Card } from '../../interfaces/cards';
+
+import AddUser from './AddUser';
 import ListNoUsers from './ListNoUsers';
+import Header from './Header';
+import ListUsers from './ListUsers';
+import Cards from './Cards';
+
+import { defaultCards } from './cards';
+import Timer from './Timer';
+import Buttons from './Buttons';
+import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
 
 const socket = io(config.urlServer);
 
-const Home: React.FC = (): ReactElement => {
-  const [users, setUsers] = React.useState<User[]>([]);
+const Room: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();
+  const [users, setUsers] = React.useState<User[]>([]);
+  const { roomId } = useParams<{ roomId: string }>();
+
+  const [cards, setCards] = React.useState<Card[]>(defaultCards);
+
   const [show, setShow] = React.useState(false);
   const [showTimer, setShowTimer] = React.useState(false);
+  const [roomNotFound, setRoomNotFound] = React.useState(false);
+
   const [openChat, setOpenChat] = React.useState(false);
   const [notificationChat, setNotificationChat] = React.useState(false);
   const [messages, setMessages] = React.useState([]);
-
-  const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
   const handleJoin = (name: string, isPlayer: boolean): void => {
     const newUser: User = {
@@ -35,10 +42,24 @@ const Home: React.FC = (): ReactElement => {
       isPlayer,
       id: uuid(),
     };
-    localStorage.setItem('username', name);
-    localStorage.setItem('isPlayer', isPlayer ? 'true' : 'false');
-    socket.emit('add user', newUser);
+    localStorage.setItem('user', JSON.stringify(newUser));
+    socket.emit('join-room', { roomId, user: newUser });
     setUser(newUser);
+  };
+
+  const filterUsers = (users: User[], isPlayer = true): User[] => {
+    return users.filter((user) => user.isPlayer === isPlayer);
+  };
+
+  const handleChangeIsPlayer = (value: boolean) => {
+    socket.emit('change-is-player', value);
+    if (user) {
+      const newUser: User = {
+        ...user,
+        isPlayer: value,
+      };
+      localStorage.setItem('user', JSON.stringify(newUser));
+    }
   };
 
   const handleClickCard = (card: Card) => {
@@ -48,54 +69,53 @@ const Home: React.FC = (): ReactElement => {
     }));
 
     setCards(newCards);
-    socket.emit('user vote', card.value);
+    socket.emit('user-vote', { roomId, value: card.value });
   };
 
   const handleShow = () => {
     if (!show && !showTimer) {
-      socket.emit('show', user);
+      socket.emit('show', { roomId, user });
     }
   };
 
   const handleClear = () => {
-    socket.emit('clear');
+    socket.emit('clear', { roomId });
   };
 
-  const handleChangeIsPlayer = (value: boolean) => {
-    socket.emit('changeIsPlayer', value);
-    localStorage.setItem('isPlayer', value ? 'true' : 'false');
+  const handleOpenChat = () => {
+    setOpenChat(!openChat);
+    setNotificationChat(false);
   };
 
-  const filterUsers = (users: User[], isPlayer = true): User[] => {
-    return users.filter((user) => user.isPlayer === isPlayer);
+  const handleSubmitChat = (message: string): void => {
+    socket.emit('send-message', { roomId, message });
   };
 
   React.useEffect(() => {
-    if (!localStorage.getItem('isPlayer')) {
-      localStorage.removeItem('username');
-    }
-    const username = localStorage.getItem('username');
-    const isPlayer = localStorage.getItem('isPlayer') === 'true';
+    const userSaved = localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user') || '')
+      : null;
 
-    if (username && !user) {
-      const newUser: User = {
-        username: username || '',
-        isPlayer,
-        id: uuid(),
-        card: undefined,
-      };
-      setUser(newUser);
-      socket.emit('add user', newUser);
+    const userLogged = userSaved || user;
+
+    if (userLogged) {
+      setUser(userLogged);
+      socket.emit('join-room', { roomId, user: userLogged });
     }
 
-    if (user) {
-      const newUser = users.find((item) => item.id === user.id);
-      setUser(newUser);
-      socket.emit('add user', newUser);
-    }
+    socket.on('user-joined', (state) => {
+      setUsers(state.users);
+      setMessages(state.messages);
+      const newUser = state.users.find(
+        (item: User) => item.id === userLogged?.id
+      );
+      if (newUser) {
+        setUser(newUser);
+      }
+    });
 
-    socket.on('show', () => {
-      setShowTimer(true);
+    socket.on('user-left', (users: Array<User>) => {
+      setUsers(users);
     });
 
     socket.on('clear', () => {
@@ -110,8 +130,8 @@ const Home: React.FC = (): ReactElement => {
       setCards(newCards);
     });
 
-    socket.on('user left', (teste) => {
-      setUsers(teste.users);
+    socket.on('show', () => {
+      setShowTimer(true);
     });
 
     socket.on('messages', (messages) => {
@@ -119,24 +139,10 @@ const Home: React.FC = (): ReactElement => {
       setNotificationChat(true);
     });
 
-    socket.on('login', (teste) => {
-      setUsers(teste.users);
-      setMessages(teste.messages);
-      const newUser = teste.users.find((item: User) => item.id === user?.id);
-      if (newUser) {
-        setUser(newUser);
-      }
+    socket.on('room-not-found', () => {
+      setRoomNotFound(true);
     });
-  }, [users]);
-
-  const handleOpenChat = () => {
-    setOpenChat(!openChat);
-    setNotificationChat(false);
-  };
-
-  const handleSubmitChat = (message: string): void => {
-    socket.emit('send message', message);
-  };
+  }, [roomId]);
 
   return (
     <div style={{ display: 'flex', position: 'relative' }}>
@@ -152,7 +158,9 @@ const Home: React.FC = (): ReactElement => {
           position: 'relative',
         }}
       >
+        {roomNotFound && <RoomNotFound />}
         {!user && <AddUser onSubmit={handleJoin} />}
+
         <Header checked={!!user?.isPlayer} onChange={handleChangeIsPlayer} />
 
         {filterUsers(users, false).length > 0 && (
@@ -160,6 +168,7 @@ const Home: React.FC = (): ReactElement => {
         )}
 
         <ListUsers users={filterUsers(users)} show={show} />
+
         <div>
           <div
             style={{
@@ -183,6 +192,7 @@ const Home: React.FC = (): ReactElement => {
             />
           )}
         </div>
+
         {!!user?.isPlayer && <Cards cards={cards} onClick={handleClickCard} />}
       </div>
       <Chat
@@ -196,4 +206,4 @@ const Home: React.FC = (): ReactElement => {
   );
 };
 
-export default Home;
+export default Room;
