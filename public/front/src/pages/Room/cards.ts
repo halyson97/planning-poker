@@ -26,6 +26,14 @@ export const defaultCards: Card[] = [
     selected: false,
   },
   {
+    value: '7',
+    selected: false,
+  },
+  {
+    value: '8',
+    selected: false,
+  },
+  {
     value: '9',
     selected: false,
   },

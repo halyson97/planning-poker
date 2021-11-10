@@ -32,7 +32,7 @@ const io = require('socket.io')(server, {
     origin: '*',
   }
 });
-io.on('connection', socketController);
+io.on('connection', (socket) => socketController(socket, io));
 
 /**
  * Listen on provided port, on all network interfaces.

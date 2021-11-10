@@ -1,6 +1,12 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { FormControlLabel, TextField, Button, Switch } from '@material-ui/core';
+import {
+  FormControlLabel,
+  TextField,
+  Button,
+  Switch,
+  Typography,
+} from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -30,6 +36,25 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     marginTop: '10px',
   },
+  link: {
+    color: '#03a9f4',
+    textDecoration: 'none',
+    cursor: 'pointer',
+  },
+  title: {
+    fontSize: '1.2rem',
+    fontWeight: 500,
+    marginBottom: '20px',
+    textAlign: 'center',
+  },
+  terms: {
+    width: 300,
+    padding: 5,
+    boxSizing: 'border-box',
+    textAlign: 'center',
+    color: '#777',
+    marginTop: 20,
+  },
 });
 
 interface Props {
@@ -48,10 +73,13 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
   return (
     <div className={classes.root}>
       <form onSubmit={handleSubmit} className={classes.form}>
+        <Typography variant="body1" component="h3" className={classes.title}>
+          Entrar na sala
+        </Typography>
         <TextField
           type="text"
-          placeholder="Username"
-          label="Username"
+          placeholder="Usuário"
+          label="Usuário"
           value={name}
           onChange={(event) => setName(event.target.value)}
           required
@@ -66,7 +94,7 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
               onChange={(event) => setIsPlayer(event.target.checked)}
             />
           }
-          label="Jogador"
+          label="Entrar como Jogador"
         />
 
         <Button
@@ -77,6 +105,13 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
         >
           Entrar
         </Button>
+
+        <div className={classes.terms}>
+          <Typography>
+            Ao continuar você concorda com nossos{' '}
+            <span className={classes.link}>termos de uso e privacidade</span>
+          </Typography>
+        </div>
       </form>
     </div>
   );
