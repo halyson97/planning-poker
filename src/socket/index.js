@@ -14,14 +14,30 @@ const getMessages = require('./messages');
 
 module.exports = function(socket, io) {
 
-    const closeEmptyRooms = () => {
-        const rooms = Object.keys(state.rooms);
-        for (let i = 0; i < rooms.length; i++) {
-            const room = rooms[i];
-            if (state.rooms[room].length === 0) {
-                delete state.rooms[room];
+    const schedulerCloseEmptyRooms = () => {
+        clearTimeout(timeoutClearRooms);
+        setTimeout(() => {
+            const rooms = Object.keys(state.rooms);
+            for (let i = 0; i < rooms.length; i++) {
+                const room = rooms[i];
+                if (state.rooms[room].length === 0) {
+                    delete state.rooms[room];
+                }
+            }
+        }, 300000);
+
+    };
+
+    const disconnect = () => {
+        const room = state.rooms[socket.roomId];
+        if (room) {
+            room.users = room.users.filter(socketUser => socketUser.user.id !== socket.user.id);
+            for (let user of room.users) {
+                user.emit('user-left', room.users.map(socketUser => socketUser.user));
             }
         }
+
+        schedulerCloseEmptyRooms();
     };
 
     let addedUser = false;
@@ -56,18 +72,9 @@ module.exports = function(socket, io) {
         }
     });
 
-    socket.on('disconnect', () => {
-        const room = state.rooms[socket.roomId];
-        if (room) {
-            room.users = room.users.filter(socketUser => socketUser.user.id !== socket.user.id);
-            for (let user of room.users) {
-                user.emit('user-left', room.users.map(socketUser => socketUser.user));
-            }
-        }
+    socket.on('disconnect', disconnect);
 
-        clearTimeout(timeoutClearRooms);
-        timeoutClearRooms = setTimeout(closeEmptyRooms, 300000);
-    });
+    socket.on('user-left', disconnect);
 
     socket.on('change-is-player', (isPlayer) => {
         const room = state.rooms[socket.roomId];

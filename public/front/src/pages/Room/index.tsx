@@ -144,6 +144,12 @@ const Room: React.FC = (): ReactElement => {
     });
   }, [roomId]);
 
+  React.useEffect(() => {
+    return () => {
+      socket.emit('user-left');
+    };
+  }, []);
+
   return (
     <div style={{ display: 'flex', position: 'relative' }}>
       <div
