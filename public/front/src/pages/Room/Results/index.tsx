@@ -16,6 +16,17 @@ const useStyles = makeStyles({
     border: '1px solid #ccc',
     borderRadius: 8,
     backgroundColor: '#fff',
+    zIndex: 10000,
+    opacity: 0,
+    animation: `$fadein 2s forwards`,
+  },
+  '@keyframes fadein': {
+    '0%': {
+      opacity: 0,
+    },
+    '100%': {
+      opacity: 1,
+    },
   },
   title: {
     fontWeight: 'bold',
@@ -55,12 +66,17 @@ interface Props {
 const Results: React.FC<Props> = ({ users }): ReactElement => {
   const classes = useStyles();
 
+  const container = React.useRef<HTMLDivElement>(null);
+
   const [state, setState] = React.useState({
     bigger: 0,
     minor: 0,
     moda: '0',
     media: 0,
   });
+
+  const [isDown, setIsDown] = React.useState(false);
+  const [offset, setOffset] = React.useState([55, 10]);
 
   const mode = (cards: number[]): string => {
     const counts = cards.reduce((acc, curr) => {
@@ -75,6 +91,27 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
       .join(' e ');
   };
 
+  const handleMouseDown = (e: React.MouseEvent): void => {
+    setIsDown(true);
+    if (container.current) {
+      const { x, y } = container.current.getBoundingClientRect();
+
+      setOffset([x - e.clientX, y - e.clientY]);
+    }
+  };
+
+  const handleMouseUp = (): void => {
+    setIsDown(false);
+  };
+
+  const handleMove = (e: any) => {
+    e.preventDefault();
+    if (isDown && container.current) {
+      container.current.style.left = `${e.clientX + offset[0]}px`;
+      container.current.style.top = `${e.clientY + offset[1]}px`;
+    }
+  };
+
   React.useEffect(() => {
     const cards: number[] = users
       .filter((user) => user.card)
@@ -87,16 +124,21 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
     );
 
     setState({
-      ...state,
-      bigger,
-      minor,
-      moda,
-      media,
+      bigger: cards.length ? bigger : 0,
+      minor: cards.length ? minor : 0,
+      media: Number.isNaN(media) ? 0 : media,
+      moda: moda.length ? moda : '0',
     });
   }, [users]);
 
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMove}
+      ref={container}
+    >
       <div className={classes.title}>Resultado:</div>
 
       <div className={classes.item}>
