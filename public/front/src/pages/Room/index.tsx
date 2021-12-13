@@ -91,6 +91,11 @@ const Room: React.FC = (): ReactElement => {
     socket.emit('send-message', { roomId, message });
   };
 
+  const playSound = (): void => {
+    const audio = new Audio('/sounds/string.mp3');
+    audio.play();
+  };
+
   React.useEffect(() => {
     const userSaved = localStorage.getItem('user')
       ? JSON.parse(localStorage.getItem('user') || '')
@@ -137,6 +142,10 @@ const Room: React.FC = (): ReactElement => {
     socket.on('messages', (messages) => {
       setMessages(messages);
       setNotificationChat(true);
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.id !== user?.id) {
+        playSound();
+      }
     });
 
     socket.on('room-not-found', () => {
