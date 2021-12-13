@@ -18,6 +18,7 @@ import Timer from './Timer';
 import Buttons from './Buttons';
 import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
+import Results from './Results';
 
 const socket = io(config.urlServer);
 
@@ -181,6 +182,8 @@ const Room: React.FC = (): ReactElement => {
         {filterUsers(users, false).length > 0 && (
           <ListNoUsers users={filterUsers(users, false)} />
         )}
+
+        {show && <Results users={filterUsers(users)} />}
 
         <ListUsers users={filterUsers(users)} show={show} />
 
