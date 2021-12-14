@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { MdClose } from 'react-icons/md';
 import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
@@ -36,6 +37,8 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   item: {
     width: '100%',
@@ -56,6 +59,11 @@ const useStyles = makeStyles({
   media: {
     color: 'green',
     fontSize: '1.3em',
+  },
+  close: {
+    cursor: 'pointer',
+    height: 24,
+    width: 24,
   },
 });
 
@@ -175,6 +183,12 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
     }
   }, [openChat]);
 
+  const handleHidden = () => {
+    if (container.current) {
+      container.current.style.display = 'none';
+    }
+  };
+
   return (
     <div
       className={classes.root}
@@ -182,7 +196,12 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
       onMouseUp={handleMouseUp}
       ref={container}
     >
-      <div className={classes.title}>Resultado:</div>
+      <div className={classes.title}>
+        <div>Resultado:</div>
+        <div className={classes.close} onClick={handleHidden}>
+          <MdClose />
+        </div>
+      </div>
 
       <div className={classes.item}>
         <div>Maior:</div>
