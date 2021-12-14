@@ -26,6 +26,7 @@ const CreateRoom: React.FC = (): ReactElement => {
     socket.on('room-created', (roomId) => {
       window.location.hash = `#/rooms/${roomId}`;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = (name: string, isPlayer: boolean) => {
@@ -34,7 +35,6 @@ const CreateRoom: React.FC = (): ReactElement => {
       isPlayer,
       id: uuid(),
     };
-    console.log('create room', newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
     socket.emit('create-room', newUser);
   };
