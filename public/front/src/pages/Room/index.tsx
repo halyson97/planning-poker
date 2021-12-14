@@ -144,7 +144,7 @@ const Room: React.FC = (): ReactElement => {
       setMessages(messages);
       setNotificationChat(true);
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.id !== user?.id) {
+      if (lastMessage?.id !== userLogged?.id) {
         playSound();
       }
     });
