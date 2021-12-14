@@ -104,13 +104,35 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
     setIsDown(false);
   };
 
-  const handleMove = (e: any) => {
-    e.preventDefault();
-    if (isDown && container.current) {
-      container.current.style.left = `${e.clientX + offset[0]}px`;
-      container.current.style.top = `${e.clientY + offset[1]}px`;
-    }
-  };
+  const handleMove = React.useCallback(
+    (e: any) => {
+      e.preventDefault();
+      if (isDown && container.current) {
+        const borderTop = 0;
+        const borderLeft = 0;
+        const borderBottom =
+          window.innerHeight - container.current.offsetHeight;
+        const borderRight = window.innerWidth - container.current.offsetWidth;
+
+        let x = e.clientX + offset[0];
+        let y = e.clientY + offset[1];
+        x = x < borderRight ? x : borderRight;
+        y = y < borderBottom ? y : borderBottom;
+        x = x > borderLeft ? x : borderLeft;
+        y = y > borderTop ? y : borderTop;
+        container.current.style.left = `${x}px`;
+        container.current.style.top = `${y}px`;
+      }
+    },
+    [isDown, offset]
+  );
+
+  React.useEffect(() => {
+    document.addEventListener('mousemove', handleMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMove);
+    };
+  }, [handleMove]);
 
   React.useEffect(() => {
     const cards: number[] = users
@@ -136,7 +158,7 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
       className={classes.root}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      onMouseMove={handleMove}
+      // onMouseMove={handleMove}
       ref={container}
     >
       <div className={classes.title}>Resultado:</div>
