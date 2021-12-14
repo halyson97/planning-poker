@@ -18,6 +18,7 @@ import Timer from './Timer';
 import Buttons from './Buttons';
 import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
+import Results from './Results';
 
 const socket = io(config.urlServer);
 
@@ -91,6 +92,11 @@ const Room: React.FC = (): ReactElement => {
     socket.emit('send-message', { roomId, message });
   };
 
+  const playSound = (): void => {
+    const audio = new Audio('/sounds/string.mp3');
+    audio.play();
+  };
+
   React.useEffect(() => {
     const userSaved = localStorage.getItem('user')
       ? JSON.parse(localStorage.getItem('user') || '')
@@ -137,6 +143,10 @@ const Room: React.FC = (): ReactElement => {
     socket.on('messages', (messages) => {
       setMessages(messages);
       setNotificationChat(true);
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.id !== user?.id) {
+        playSound();
+      }
     });
 
     socket.on('room-not-found', () => {
@@ -172,6 +182,8 @@ const Room: React.FC = (): ReactElement => {
         {filterUsers(users, false).length > 0 && (
           <ListNoUsers users={filterUsers(users, false)} />
         )}
+
+        {show && <Results users={filterUsers(users)} />}
 
         <ListUsers users={filterUsers(users)} show={show} />
 
