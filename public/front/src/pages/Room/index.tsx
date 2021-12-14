@@ -144,7 +144,7 @@ const Room: React.FC = (): ReactElement => {
       setMessages(messages);
       setNotificationChat(true);
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.id !== user?.id) {
+      if (lastMessage?.id !== userLogged?.id) {
         playSound();
       }
     });
@@ -183,7 +183,7 @@ const Room: React.FC = (): ReactElement => {
           <ListNoUsers users={filterUsers(users, false)} />
         )}
 
-        {show && <Results users={filterUsers(users)} />}
+        {show && <Results users={filterUsers(users)} openChat={openChat} />}
 
         <ListUsers users={filterUsers(users)} show={show} />
 

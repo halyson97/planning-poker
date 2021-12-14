@@ -1,12 +1,13 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { MdClose } from 'react-icons/md';
 import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
   root: {
     width: '250px',
     display: 'flex',
-    position: 'absolute',
+    position: 'fixed',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
@@ -36,6 +37,8 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   item: {
     width: '100%',
@@ -57,13 +60,19 @@ const useStyles = makeStyles({
     color: 'green',
     fontSize: '1.3em',
   },
+  close: {
+    cursor: 'pointer',
+    height: 24,
+    width: 24,
+  },
 });
 
 interface Props {
   users: User[];
+  openChat: boolean;
 }
 
-const Results: React.FC<Props> = ({ users }): ReactElement => {
+const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
   const classes = useStyles();
 
   const container = React.useRef<HTMLDivElement>(null);
@@ -104,13 +113,35 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
     setIsDown(false);
   };
 
-  const handleMove = (e: any) => {
-    e.preventDefault();
-    if (isDown && container.current) {
-      container.current.style.left = `${e.clientX + offset[0]}px`;
-      container.current.style.top = `${e.clientY + offset[1]}px`;
-    }
-  };
+  const handleMove = React.useCallback(
+    (e: any) => {
+      e.preventDefault();
+      if (isDown && container.current) {
+        const borderTop = 0;
+        const borderLeft = 0;
+        const borderBottom =
+          window.innerHeight - container.current.offsetHeight;
+        const borderRight = window.innerWidth - container.current.offsetWidth;
+
+        let x = e.clientX + offset[0];
+        let y = e.clientY + offset[1];
+        x = x < borderRight ? x : borderRight;
+        y = y < borderBottom ? y : borderBottom;
+        x = x > borderLeft ? x : borderLeft;
+        y = y > borderTop ? y : borderTop;
+        container.current.style.left = `${x}px`;
+        container.current.style.top = `${y}px`;
+      }
+    },
+    [isDown, offset]
+  );
+
+  React.useEffect(() => {
+    document.addEventListener('mousemove', handleMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMove);
+    };
+  }, [handleMove]);
 
   React.useEffect(() => {
     const cards: number[] = users
@@ -131,15 +162,46 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
     });
   }, [users]);
 
+  React.useEffect(() => {
+    if (container.current) {
+      const { x } = container.current.getBoundingClientRect();
+
+      const borderLeft = 0;
+      const borderRight = window.innerWidth - container.current.offsetWidth;
+
+      if (openChat) {
+        let newX = x - 350;
+        newX = newX < borderRight ? newX : borderRight - 10;
+        newX = newX > borderLeft ? newX : borderLeft;
+        container.current.style.left = `${newX}px`;
+      } else {
+        let newX = x + 350;
+        newX = newX < borderRight ? newX : borderRight - 10;
+        newX = newX > borderLeft ? newX : borderLeft;
+        container.current.style.left = `${newX}px`;
+      }
+    }
+  }, [openChat]);
+
+  const handleHidden = () => {
+    if (container.current) {
+      container.current.style.display = 'none';
+    }
+  };
+
   return (
     <div
       className={classes.root}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      onMouseMove={handleMove}
       ref={container}
     >
-      <div className={classes.title}>Resultado:</div>
+      <div className={classes.title}>
+        <div>Resultado:</div>
+        <div className={classes.close} onClick={handleHidden}>
+          <MdClose />
+        </div>
+      </div>
 
       <div className={classes.item}>
         <div>Maior:</div>
