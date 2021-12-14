@@ -6,7 +6,7 @@ const useStyles = makeStyles({
   root: {
     width: '250px',
     display: 'flex',
-    position: 'absolute',
+    position: 'fixed',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
@@ -61,9 +61,10 @@ const useStyles = makeStyles({
 
 interface Props {
   users: User[];
+  openChat: boolean;
 }
 
-const Results: React.FC<Props> = ({ users }): ReactElement => {
+const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
   const classes = useStyles();
 
   const container = React.useRef<HTMLDivElement>(null);
@@ -153,12 +154,32 @@ const Results: React.FC<Props> = ({ users }): ReactElement => {
     });
   }, [users]);
 
+  React.useEffect(() => {
+    if (container.current) {
+      const { x } = container.current.getBoundingClientRect();
+
+      const borderLeft = 0;
+      const borderRight = window.innerWidth - container.current.offsetWidth;
+
+      if (openChat) {
+        let newX = x - 350;
+        newX = newX < borderRight ? newX : borderRight - 10;
+        newX = newX > borderLeft ? newX : borderLeft;
+        container.current.style.left = `${newX}px`;
+      } else {
+        let newX = x + 350;
+        newX = newX < borderRight ? newX : borderRight - 10;
+        newX = newX > borderLeft ? newX : borderLeft;
+        container.current.style.left = `${newX}px`;
+      }
+    }
+  }, [openChat]);
+
   return (
     <div
       className={classes.root}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      // onMouseMove={handleMove}
       ref={container}
     >
       <div className={classes.title}>Resultado:</div>

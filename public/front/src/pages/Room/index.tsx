@@ -183,7 +183,7 @@ const Room: React.FC = (): ReactElement => {
           <ListNoUsers users={filterUsers(users, false)} />
         )}
 
-        {show && <Results users={filterUsers(users)} />}
+        {show && <Results users={filterUsers(users)} openChat={openChat} />}
 
         <ListUsers users={filterUsers(users)} show={show} />
 
