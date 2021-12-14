@@ -6,7 +6,7 @@ const useStyles = makeStyles({
   root: {
     width: '250px',
     display: 'flex',
-    position: 'fixed',
+    position: 'absolute',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
