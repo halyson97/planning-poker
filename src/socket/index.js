@@ -14,6 +14,16 @@ const getMessages = require('./messages');
 
 module.exports = function(socket, io) {
 
+    const generateCode = (lenght) => {
+        let text = "";
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        for (let i = 0; i < lenght; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
     const schedulerCloseEmptyRooms = () => {
         clearTimeout(timeoutClearRooms);
         setTimeout(() => {
@@ -46,6 +56,7 @@ module.exports = function(socket, io) {
         const roomId = uuid.v4();
         state.rooms[roomId] = {
             id: roomId,
+            code: generateCode(6),
             users: [],
             messages: [],
             admin: user,
@@ -65,6 +76,7 @@ module.exports = function(socket, io) {
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
+                    roomCode: room.code,
                 });
             }
         } else {
@@ -90,6 +102,7 @@ module.exports = function(socket, io) {
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
+                    roomCode: room.code,
                 });
             }
         } else {
@@ -111,6 +124,7 @@ module.exports = function(socket, io) {
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
+                    roomCode: room.code,
                 });
             }
         } else {
@@ -130,6 +144,7 @@ module.exports = function(socket, io) {
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
+                    roomCode: room.code,
                 });
                 user.emit('clear');
             }
@@ -154,6 +169,7 @@ module.exports = function(socket, io) {
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
+                    roomCode: room.code,
                 });
                 user.emit('show');
             }
@@ -176,6 +192,16 @@ module.exports = function(socket, io) {
             }
         } else {
             socket.emit('room-not-found'); 
+        }
+    });
+
+    socket.on('find-room', ({ code }) =>{
+        const rooms = Object.keys(state.rooms);
+        const room = rooms.find(roomId => state.rooms[roomId].code === code);
+        if (room) {
+            socket.emit('room-found', room);
+        } else {
+            socket.emit('room-not-found');
         }
     });
 }

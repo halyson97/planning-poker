@@ -26,6 +26,10 @@ const useStyles = makeStyles({
     borderLeft: '1px solid #e0e0e0',
     boxShadow: '0px 0px 10px #e0e0e0',
     background: '#fff',
+    position: 'fixed',
+    right: '0',
+    top: '0',
+    zIndex: 9999,
   },
   close: {
     width: '100%',

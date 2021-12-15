@@ -1,21 +1,23 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdPersonOutline } from 'react-icons/md';
+import { Tooltip } from '@material-ui/core';
 import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
   root: {
-    width: '250px',
+    width: 250,
     display: 'flex',
     position: 'fixed',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
-    top: 10,
+    top: 200,
     left: 10,
-    minHeight: '50px',
+    minHeight: 50,
     border: '1px solid #ccc',
     borderRadius: 8,
+    zIndex: 100,
   },
   title: {
     fontWeight: 'bold',
@@ -54,10 +56,17 @@ const ListNoUsers: React.FC<Props> = ({ users }): ReactElement => {
     <div className={classes.root}>
       <div className={classes.title}>Observadores:</div>
       {users.map((user) => (
-        <div key={user.id} className={classes.user}>
-          <MdPersonOutline className={classes.icon} />
-          {user.username}
-        </div>
+        <Tooltip
+          title={`${user.username}`}
+          key={user.id}
+          arrow
+          placement="top-start"
+        >
+          <div className={classes.user}>
+            <MdPersonOutline className={classes.icon} />
+            {user.username}
+          </div>
+        </Tooltip>
       ))}
     </div>
   );

@@ -216,7 +216,7 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
         <div className={classes.bold}>{state.moda}</div>
       </div>
       <div className={`${classes.item} ${classes.media}`}>
-        <div>Media:</div>
+        <div>Média:</div>
         <div className={classes.bold}>{state.media}</div>
       </div>
     </div>
