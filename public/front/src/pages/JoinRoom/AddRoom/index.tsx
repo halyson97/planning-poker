@@ -1,13 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-  FormControlLabel,
-  TextField,
-  Button,
-  Switch,
-  Typography,
-} from '@material-ui/core';
-import { User } from '../../../interfaces/user';
+import { TextField, Button, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -26,7 +19,6 @@ const useStyles = makeStyles({
   },
   input: {
     width: '100%',
-    marginBottom: '10px',
   },
   button: {
     height: '35px',
@@ -35,16 +27,6 @@ const useStyles = makeStyles({
     color: '#fff',
     background: '#7057de',
     cursor: 'pointer',
-    marginTop: '10px',
-  },
-  buttonEnter: {
-    height: '35px',
-    border: '1px solid #7057de',
-    borderRadius: '5px',
-    color: '#7057de',
-    background: '#fff',
-    cursor: 'pointer',
-    marginTop: 20,
   },
   link: {
     color: '#03a9f4',
@@ -65,57 +47,65 @@ const useStyles = makeStyles({
     color: '#777',
     marginTop: 20,
   },
+  error: {
+    color: 'red',
+    fontSize: '0.9rem',
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 30,
+  },
+  buttonEnter: {
+    height: '35px',
+    border: '1px solid #7057de',
+    borderRadius: '5px',
+    color: '#7057de',
+    background: '#fff',
+    cursor: 'pointer',
+    marginTop: 20,
+  },
 });
 
 interface Props {
-  onSubmit: (name: string, isPlayer: boolean) => void;
-  user: User | undefined;
+  onSubmit: (name: string) => void;
+  error: boolean;
 }
 
-const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
+const AddRoom: React.FC<Props> = ({ onSubmit, error }): ReactElement => {
   const classes = useStyles();
 
-  const [name, setName] = React.useState(user?.username || '');
-  const [isPlayer, setIsPlayer] = React.useState(true);
+  const [name, setName] = React.useState('');
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    onSubmit(name, isPlayer);
+    onSubmit(name);
   };
 
   const joinRoom = () => {
-    window.location.hash = `#/join-room`;
+    window.location.hash = `#/create-room`;
   };
-
-  React.useEffect(() => {
-    setName(user?.username || '');
-  }, [user]);
 
   return (
     <div className={classes.root}>
       <form onSubmit={handleSubmit} className={classes.form}>
         <Typography variant="body1" component="h3" className={classes.title}>
-          Criar sala
+          Entrar em uma sala
         </Typography>
         <TextField
           type="text"
-          placeholder="Usuário"
-          label="Usuário"
+          placeholder="Código da sala"
+          label="Código da sala"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => setName(event.target.value.toUpperCase())}
           required
           variant="outlined"
           className={classes.input}
+          inputProps={{ maxLength: 6, minLength: 6 }}
         />
 
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isPlayer}
-              onChange={(event) => setIsPlayer(event.target.checked)}
-            />
-          }
-          label="Entrar como Jogador"
-        />
+        <div className={classes.error}>
+          {error ? 'Sala não encontrada' : ''}
+        </div>
 
         <Button
           type="submit"
@@ -123,7 +113,7 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
           color="primary"
           className={classes.button}
         >
-          Criar sala
+          Entrar na sala
         </Button>
 
         <div className={classes.terms}>
@@ -137,7 +127,7 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
           className={classes.buttonEnter}
           onClick={joinRoom}
         >
-          Entrar em uma sala
+          Criar sala
         </Button>
       </form>
     </div>

@@ -74,7 +74,7 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
     <div className={classes.root}>
       <form onSubmit={handleSubmit} className={classes.form}>
         <Typography variant="body1" component="h3" className={classes.title}>
-          Entrar na sala
+          Informe o seu usuário
         </Typography>
         <TextField
           type="text"

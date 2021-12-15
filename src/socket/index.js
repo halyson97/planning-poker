@@ -194,4 +194,14 @@ module.exports = function(socket, io) {
             socket.emit('room-not-found'); 
         }
     });
+
+    socket.on('find-room', ({ code }) =>{
+        const rooms = Object.keys(state.rooms);
+        const room = rooms.find(roomId => state.rooms[roomId].code === code);
+        if (room) {
+            socket.emit('room-found', room);
+        } else {
+            socket.emit('room-not-found');
+        }
+    });
 }
