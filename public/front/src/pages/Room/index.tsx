@@ -19,6 +19,7 @@ import Buttons from './Buttons';
 import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
 import Results from './Results';
+import Shared from './Shared';
 
 const socket = io(config.urlServer);
 
@@ -32,6 +33,7 @@ const Room: React.FC = (): ReactElement => {
   const [show, setShow] = React.useState(false);
   const [showTimer, setShowTimer] = React.useState(false);
   const [roomNotFound, setRoomNotFound] = React.useState(false);
+  const [roomCode, setRoomCode] = React.useState('');
 
   const [openChat, setOpenChat] = React.useState(false);
   const [notificationChat, setNotificationChat] = React.useState(false);
@@ -112,6 +114,7 @@ const Room: React.FC = (): ReactElement => {
     socket.on('user-joined', (state) => {
       setUsers(state.users);
       setMessages(state.messages);
+      setRoomCode(state.roomCode);
       const newUser = state.users.find(
         (item: User) => item.id === userLogged?.id
       );
@@ -182,6 +185,8 @@ const Room: React.FC = (): ReactElement => {
         {filterUsers(users, false).length > 0 && (
           <ListNoUsers users={filterUsers(users, false)} />
         )}
+
+        <Shared code={roomCode} />
 
         {show && <Results users={filterUsers(users)} openChat={openChat} />}
 

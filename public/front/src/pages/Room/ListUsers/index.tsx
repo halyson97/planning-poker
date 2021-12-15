@@ -73,7 +73,9 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
               <div className={classes.itemCard}>{show && user.card}</div>
             </ReactCardFlip>
 
-            <div className={classes.itemName}>{user.username}</div>
+            <Tooltip title={`${user.username}`} arrow>
+              <div className={classes.itemName}>{user.username}</div>
+            </Tooltip>
           </div>
         </Tooltip>
       ))}

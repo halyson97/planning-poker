@@ -5,17 +5,18 @@ import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
   root: {
-    width: '250px',
+    width: 250,
     display: 'flex',
     position: 'fixed',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
-    top: 10,
+    top: 200,
     left: 10,
-    minHeight: '50px',
+    minHeight: 50,
     border: '1px solid #ccc',
     borderRadius: 8,
+    zIndex: 100,
   },
   title: {
     fontWeight: 'bold',
