@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdPersonOutline } from 'react-icons/md';
+import { Tooltip } from '@material-ui/core';
 import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
@@ -55,10 +56,17 @@ const ListNoUsers: React.FC<Props> = ({ users }): ReactElement => {
     <div className={classes.root}>
       <div className={classes.title}>Observadores:</div>
       {users.map((user) => (
-        <div key={user.id} className={classes.user}>
-          <MdPersonOutline className={classes.icon} />
-          {user.username}
-        </div>
+        <Tooltip
+          title={`${user.username}`}
+          key={user.id}
+          arrow
+          placement="top-start"
+        >
+          <div className={classes.user}>
+            <MdPersonOutline className={classes.icon} />
+            {user.username}
+          </div>
+        </Tooltip>
       ))}
     </div>
   );
