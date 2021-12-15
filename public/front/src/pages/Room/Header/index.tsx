@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { FormControlLabel, Switch } from '@material-ui/core';
+import { Button, FormControlLabel, Switch } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -14,6 +14,14 @@ const useStyles = makeStyles({
     top: 0,
     left: 0,
     height: '50px',
+  },
+  buttonEnter: {
+    height: '35px',
+    border: '1px solid #e75155',
+    borderRadius: '5px',
+    color: '#e75155',
+    background: '#fff',
+    cursor: 'pointer',
   },
 });
 
@@ -32,6 +40,10 @@ const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
     onChange(value);
   };
 
+  const exitRoom = () => {
+    window.location.hash = `#/create-room`;
+  };
+
   React.useEffect(() => {
     setIsPlayer(checked);
   }, [checked]);
@@ -47,6 +59,13 @@ const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
         }
         label="Jogador"
       />
+      <Button
+        color="primary"
+        className={classes.buttonEnter}
+        onClick={exitRoom}
+      >
+        Sair da sala
+      </Button>
     </div>
   );
 };

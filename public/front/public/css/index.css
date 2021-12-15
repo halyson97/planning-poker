@@ -53,3 +53,69 @@ body::-webkit-scrollbar-track-piece {
   -webkit-box-shadow: inset 1px 0 0 rgb(0 0 0 / 14%), inset -1px 0 0 rgb(0 0 0 / 7%);
   box-shadow: inset 1px 0 0 rgb(0 0 0 / 14%), inset -1px 0 0 rgb(0 0 0 / 7%);
 }
+
+
+.content-install {
+  min-width: 300px;
+  width: 80%;
+  max-width: 1000px;
+  height: 100px;
+  position: fixed;
+  z-index: 1000;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  border: 1px solid #8bc34a;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.content-news {
+  background-color: #8bc34a;
+  color: #fff;
+  position: absolute;
+  top: -15px;
+  left: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+.content-button-install {
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+.button-install {
+  background-color: #fff;
+  color: #8bc34a;
+  border: 1px solid #8bc34a;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.button-install:hover {
+  background-color: #8bc34a33;
+}
+
+.close-install {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #777;
+}
