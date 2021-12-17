@@ -104,9 +104,11 @@ const Room: React.FC = (): ReactElement => {
       ? JSON.parse(localStorage.getItem('user') || '')
       : null;
 
-    const userLogged = userSaved || user;
-
-    if (userLogged) {
+    if (userSaved) {
+      const userLogged = {
+        ...userSaved,
+        id: uuid(),
+      };
       setUser(userLogged);
       socket.emit('join-room', { roomId, user: userLogged });
     }
@@ -116,7 +118,7 @@ const Room: React.FC = (): ReactElement => {
       setMessages(state.messages);
       setRoomCode(state.roomCode);
       const newUser = state.users.find(
-        (item: User) => item.id === userLogged?.id
+        (item: User) => item.id === userSaved?.id
       );
       if (newUser) {
         setUser(newUser);
@@ -147,7 +149,7 @@ const Room: React.FC = (): ReactElement => {
       setMessages(messages);
       setNotificationChat(true);
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.id !== userLogged?.id) {
+      if (lastMessage?.id !== userSaved?.id) {
         playSound();
       }
     });
