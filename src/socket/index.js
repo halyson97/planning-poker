@@ -11,8 +11,7 @@ let timeoutClearRooms;
 
 const getMessages = require('./messages');
 
-
-module.exports = function(socket, io) {
+const homeController = function(socket, io){
 
     const generateCode = (lenght) => {
         let text = "";
@@ -24,6 +23,22 @@ module.exports = function(socket, io) {
         return text;
     };
 
+    socket.on('create-room', (user) => {
+        const roomId = uuid.v4();
+        state.rooms[roomId] = {
+            id: roomId,
+            code: generateCode(6),
+            users: [],
+            messages: [],
+            isPlayer: true,
+        };
+        socket.emit('room-created', roomId);
+    });
+
+}
+
+const roomControler = function(socket, io){
+
     const schedulerCloseEmptyRooms = () => {
         clearTimeout(timeoutClearRooms);
         setTimeout(() => {
@@ -34,7 +49,7 @@ module.exports = function(socket, io) {
                     delete state.rooms[room];
                 }
             }
-        }, 300000);
+        }, 30000);
 
     };
 
@@ -50,23 +65,7 @@ module.exports = function(socket, io) {
         schedulerCloseEmptyRooms();
     };
 
-    let addedUser = false;
-
-    socket.on('create-room', (user) => {
-        const roomId = uuid.v4();
-        state.rooms[roomId] = {
-            id: roomId,
-            code: generateCode(6),
-            users: [],
-            messages: [],
-            admin: user,
-            isPlayer: true,
-        };
-        socket.emit('room-created', roomId);
-    });
-
     socket.on('join-room', ({roomId, user}) => {
-        if (addedUser) return;
         socket.user = user;
         socket.roomId = roomId;
         const room = state.rooms[roomId];
@@ -194,6 +193,9 @@ module.exports = function(socket, io) {
             socket.emit('room-not-found'); 
         }
     });
+}
+
+const codeController = function(socket, io){
 
     socket.on('find-room', ({ code }) =>{
         const rooms = Object.keys(state.rooms);
@@ -204,4 +206,10 @@ module.exports = function(socket, io) {
             socket.emit('room-not-found');
         }
     });
+}
+
+module.exports = {
+    homeController,
+    roomControler,
+    codeController,
 }

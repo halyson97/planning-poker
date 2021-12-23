@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
-import { io } from 'socket.io-client';
+import { Manager } from 'socket.io-client';
 
 import config from '../../config/config';
 
 import AddRoom from './AddRoom';
 
-const socket = io(config.urlServer);
+const manager = new Manager(config.urlServer);
+const socket = manager.socket('/code');
 
 let timeout: ReturnType<typeof setTimeout>;
 
