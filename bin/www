@@ -32,7 +32,9 @@ const io = require('socket.io')(server, {
     origin: '*',
   }
 });
-io.on('connection', (socket) => socketController(socket, io));
+
+io.of("/home").on('connection', (socket) => socketController.homeController(socket, io));
+io.of("/room").on('connection', (socket) => socketController.roomController(socket, io));
 
 /**
  * Listen on provided port, on all network interfaces.

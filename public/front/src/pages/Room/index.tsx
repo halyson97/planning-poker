@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import { Manager } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 
 import config from '../../config/config';
@@ -19,7 +19,9 @@ import Buttons from './Buttons';
 import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
 
-const socket = io(config.urlServer);
+const manager = new Manager(config.urlServer);
+
+const socket = manager.socket('/room');
 
 const Room: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();

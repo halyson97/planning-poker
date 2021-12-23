@@ -12,7 +12,24 @@ let timeoutClearRooms;
 const getMessages = require('./messages');
 
 
-module.exports = function(socket, io) {
+const homeController = function(socket, io) {
+    console.log('homeController');
+
+    socket.on('create-room', (user) => {
+        console.log('create-room', user);
+        const roomId = uuid.v4();
+        state.rooms[roomId] = {
+            id: roomId,
+            users: [],
+            messages: [],
+        };
+        console.log('room-created', roomId);
+        socket.emit('room-created', roomId);
+    });
+}
+
+const roomController = function(socket, io) {
+    console.log('aquiiiiiiiiiii');
 
     const schedulerCloseEmptyRooms = () => {
         clearTimeout(timeoutClearRooms);
@@ -24,15 +41,17 @@ module.exports = function(socket, io) {
                     delete state.rooms[room];
                 }
             }
-        }, 300000);
+        }, 30000);
 
     };
 
     const disconnect = () => {
+        console.log('disconnect')
         const room = state.rooms[socket.roomId];
         if (room) {
             room.users = room.users.filter(socketUser => socketUser.user.id !== socket.user.id);
             for (let user of room.users) {
+                console.log('user-left', room.users.map(socketUser => socketUser.user));
                 user.emit('user-left', room.users.map(socketUser => socketUser.user));
             }
         }
@@ -40,34 +59,25 @@ module.exports = function(socket, io) {
         schedulerCloseEmptyRooms();
     };
 
-    let addedUser = false;
-
-    socket.on('create-room', (user) => {
-        const roomId = uuid.v4();
-        state.rooms[roomId] = {
-            id: roomId,
-            users: [],
-            messages: [],
-            admin: user,
-            isPlayer: true,
-        };
-        socket.emit('room-created', roomId);
-    });
-
     socket.on('join-room', ({roomId, user}) => {
-        if (addedUser) return;
+        console.log('join-room', roomId, user); 
         socket.user = user;
         socket.roomId = roomId;
         const room = state.rooms[roomId];
         if (room) {
             room.users.push(socket);
             for (let user of room.users) {
+                console.log('user-joined', {
+                    users: room.users.map(socketUser => socketUser.user),
+                    messages: room.messages,
+                });
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                 });
             }
         } else {
+            console.log('room-not-found'); 
             socket.emit('room-not-found'); 
         }
     });
@@ -77,6 +87,7 @@ module.exports = function(socket, io) {
     socket.on('user-left', disconnect);
 
     socket.on('change-is-player', (isPlayer) => {
+        console.log('change-is-player', isPlayer);
         const room = state.rooms[socket.roomId];
         if (room) {
             room.users = room.users.map(socketUser => {
@@ -87,17 +98,23 @@ module.exports = function(socket, io) {
                 return socketUser;
             })
             for (let user of room.users) {
+                console.log('user-joined', {
+                    users: room.users.map(socketUser => socketUser.user),
+                    messages: room.messages,
+                });
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                 });
             }
         } else {
+            console.log('room-not-found'); 
             socket.emit('room-not-found'); 
         }
     });
 
     socket.on('user-vote', ({ roomId, value }) => {
+        console.log('user-vote', roomId, value);
         const room = state.rooms[roomId];
         if (room) {
             room.users = room.users.map(socketUser => {
@@ -108,17 +125,23 @@ module.exports = function(socket, io) {
                 return socketUser;
             })
             for (let user of room.users) {
+                console.log('user-joined', {
+                    users: room.users.map(socketUser => socketUser.user),
+                    messages: room.messages,
+                });
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                 });
             }
         } else {
+            console.log('room-not-found');
             socket.emit('room-not-found'); 
         }
     });
 
     socket.on('clear', ({ roomId }) => {
+        console.log('clear', roomId);
         const room = state.rooms[roomId];
         if (room) {
             room.users = room.users.map(socketUser => {
@@ -127,18 +150,25 @@ module.exports = function(socket, io) {
                 return socketUser;
             })
             for (let user of room.users) {
+                console.log('user-joined', {
+                    users: room.users.map(socketUser => socketUser.user),
+                    messages: room.messages,
+                });
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                 });
+                console.log('clear');
                 user.emit('clear');
             }
         } else {
+            console.log('room-not-found'); 
             socket.emit('room-not-found'); 
         }
     });
 
     socket.on('show', ({ roomId, user }) => {
+        console.log('show', roomId, user);
         const room = state.rooms[roomId];
         if (room) {
             room.users = room.users.map(socketUser => {
@@ -151,6 +181,11 @@ module.exports = function(socket, io) {
                 return socketUser;
             })
             for (let user of room.users) {
+                console.log('user-joined', {
+                    users: room.users.map(socketUser => socketUser.user),
+                    messages: room.messages,
+                });
+                console.log('show');
                 user.emit('user-joined', {
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
@@ -158,11 +193,13 @@ module.exports = function(socket, io) {
                 user.emit('show');
             }
         } else {
+            console.log('room-not-found');
             socket.emit('room-not-found'); 
         }
     });
 
     socket.on('send-message', ({ roomId, message }) =>{
+        console.log('send-message', roomId, message);
         const room = state.rooms[roomId];
         if (room) {
             room.messages.push({
@@ -172,10 +209,17 @@ module.exports = function(socket, io) {
                 date: new Date(),
             });
             for (let user of room.users) {
+                console.log('messages', room.messages);
                 user.emit('messages', room.messages);
             }
         } else {
+            console.log('room-not-found');
             socket.emit('room-not-found'); 
         }
     });
 }
+
+module.exports = {
+    homeController,
+    roomController,
+};

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { io } from 'socket.io-client';
+import { Manager } from 'socket.io-client';
+
 import { v4 as uuid } from 'uuid';
 
 import config from '../../config/config';
@@ -7,7 +8,8 @@ import { User } from '../../interfaces/user';
 
 import AddRoom from './AddRoom';
 
-const socket = io(config.urlServer);
+const manager = new Manager(config.urlServer);
+const socket = manager.socket('/home');
 
 const CreateRoom: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();
