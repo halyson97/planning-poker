@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import Connect from './Connect';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Connect>
+      <App />
+    </Connect>
   </React.StrictMode>,
   document.getElementById('root')
 );
