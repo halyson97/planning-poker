@@ -35,6 +35,26 @@ const homeController = function(socket, io){
         socket.emit('room-created', roomId);
     });
 
+    socket.on('verify-connect', ({ id }) => {
+        for(const user of state.users){
+            console.log(user.id, id);
+            if(user.id === id){
+                console.log('disconnect', id)
+                user.emit('is-disconnected');
+            }
+        }
+
+        state.users = state.users.filter(user => user.id !== id);
+
+        socket.id = id;
+        state.users.push(socket);
+        socket.emit('is-connected');
+    })
+
+    socket.on('on-disconnect', (id) => {
+        state.users = state.users.filter(user => user.id !== id);
+    });
+
 }
 
 const roomControler = function(socket, io){
