@@ -22,7 +22,7 @@ const Connect: React.FC = ({ children }): ReactElement => {
       setTimeout(() => {
         setIsConnected(true);
         setIsLoading(false);
-      }, 1000);
+      }, 3000);
     });
     socket.on('is-disconnected', () => {
       setIsDisconnected(true);
