@@ -61,6 +61,11 @@ const defaultOptions = {
 
 const Disconnected: React.FC = (): ReactElement => {
   const classes = useStyles();
+
+  const reconnect = () => {
+    window.location.reload();
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.content}>
@@ -75,7 +80,7 @@ const Disconnected: React.FC = (): ReactElement => {
         <Button
           color="primary"
           className={classes.buttonEnter}
-          onClick={() => null}
+          onClick={() => reconnect()}
         >
           Jogar aqui
         </Button>
