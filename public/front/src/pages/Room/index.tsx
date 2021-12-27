@@ -158,6 +158,7 @@ const Room: React.FC = (): ReactElement => {
     socket.on('room-not-found', () => {
       setRoomNotFound(true);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   React.useEffect(() => {
