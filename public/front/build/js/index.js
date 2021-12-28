@@ -3,6 +3,13 @@ let deferredPrompt;
 const installApp = document.getElementById('installApp');
 const content = document.getElementById('content-install');
 
+function closeButtonInstall(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  content.style.display = 'none';
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
   content.style.display = 'flex';
   deferredPrompt = e;
@@ -15,12 +22,6 @@ installApp.addEventListener('click', async () => {
     if (outcome === 'accepted') {
       deferredPrompt = null;
     }
+    closeButtonInstall();
   }
 });
-
-function closeButtonInstall(event) {
-  if (event) {
-    event.preventDefault();
-  }
-  content.style.display = 'none';
-}
