@@ -106,12 +106,8 @@ const Room: React.FC = (): ReactElement => {
       : null;
 
     if (userSaved) {
-      const userLogged = {
-        ...userSaved,
-        id: uuid(),
-      };
-      setUser(userLogged);
-      socket.emit('join-room', { roomId, user: userLogged });
+      setUser(userSaved);
+      socket.emit('join-room', { roomId, user: userSaved });
     }
 
     socket.on('user-joined', (state) => {
