@@ -42,7 +42,6 @@ const useStyles = makeStyles({
   },
   card: {
     background: '#7057de33',
-    backgroundImage: `url(${cardBack})`,
     backgroundPosition: 'center',
     backgroundSize: 'cover',
   },
@@ -55,6 +54,35 @@ interface Props {
 
 const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
   const classes = useStyles();
+
+  const [userLocal, setUserLocal] = React.useState('');
+
+  const [backgroundCard, setBackgroundCard] = React.useState(cardBack);
+
+  const handleClickCard = () => {
+    const id = backgroundCard.id === 6 ? 1 : backgroundCard.id + 1;
+    const card = getCard(id);
+    setBackgroundCard(card);
+    localStorage.setItem('card', JSON.stringify(card));
+  };
+
+  React.useEffect(() => {
+    const userSaved = localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user') || '')
+      : null;
+
+    if (userSaved) {
+      setUserLocal(userSaved.username);
+    }
+
+    const cardSaved = localStorage.getItem('card')
+      ? JSON.parse(localStorage.getItem('card') || '')
+      : null;
+
+    if (cardSaved) {
+      setBackgroundCard(cardSaved);
+    }
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -69,12 +97,20 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
             <ReactCardFlip isFlipped={show} flipDirection="horizontal">
               <div
                 className={`${classes.itemCard} ${user.card && classes.card}`}
+                onClick={handleClickCard}
+                style={{
+                  backgroundImage: user.card
+                    ? `url(${backgroundCard.card})`
+                    : '',
+                }}
               ></div>
               <div className={classes.itemCard}>{show && user.card}</div>
             </ReactCardFlip>
 
             <Tooltip title={`${user.username}`} arrow>
-              <div className={classes.itemName}>{user.username}</div>
+              <div className={classes.itemName}>
+                {user.username === userLocal ? 'Eu' : user.username}
+              </div>
             </Tooltip>
           </div>
         </Tooltip>
