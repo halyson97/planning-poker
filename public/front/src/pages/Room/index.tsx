@@ -188,7 +188,7 @@ const Room: React.FC = (): ReactElement => {
 
         <Shared code={roomCode} />
 
-        {show && <Results users={filterUsers(users)} openChat={openChat} />}
+        {show && <Results users={filterUsers(users)} />}
 
         <ListUsers users={filterUsers(users)} show={show} />
 

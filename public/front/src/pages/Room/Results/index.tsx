@@ -4,15 +4,26 @@ import { MdClose } from 'react-icons/md';
 import { User } from '../../../interfaces/user';
 
 const useStyles = makeStyles({
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    '@media (max-width:1000px)': {
+      width: '100%',
+      height: '100vh',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      zIndex: 9999,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  },
   root: {
     width: '250px',
     display: 'flex',
-    position: 'fixed',
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
-    top: 55,
-    right: 10,
     minHeight: '50px',
     border: '1px solid #ccc',
     borderRadius: 8,
@@ -20,6 +31,11 @@ const useStyles = makeStyles({
     zIndex: 10000,
     opacity: 0,
     animation: `$fadein 2s forwards`,
+    '@media (min-width:1000px)': {
+      position: 'fixed',
+      top: 55,
+      right: 10,
+    },
   },
   '@keyframes fadein': {
     '0%': {
@@ -64,15 +80,15 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     height: 24,
     width: 24,
+    color: '#ff0000',
   },
 });
 
 interface Props {
   users: User[];
-  openChat: boolean;
 }
 
-const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
+const Results: React.FC<Props> = ({ users }): ReactElement => {
   const classes = useStyles();
 
   const container = React.useRef<HTMLDivElement>(null);
@@ -83,9 +99,6 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
     moda: '0',
     media: 0,
   });
-
-  const [isDown, setIsDown] = React.useState(false);
-  const [offset, setOffset] = React.useState([55, 10]);
 
   const mode = (cards: number[]): string => {
     const counts = cards.reduce((acc, curr) => {
@@ -99,49 +112,6 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
       .filter((key) => Number(counts[key]) === max)
       .join(' e ');
   };
-
-  const handleMouseDown = (e: React.MouseEvent): void => {
-    setIsDown(true);
-    if (container.current) {
-      const { x, y } = container.current.getBoundingClientRect();
-
-      setOffset([x - e.clientX, y - e.clientY]);
-    }
-  };
-
-  const handleMouseUp = (): void => {
-    setIsDown(false);
-  };
-
-  const handleMove = React.useCallback(
-    (e: any) => {
-      e.preventDefault();
-      if (isDown && container.current) {
-        const borderTop = 0;
-        const borderLeft = 0;
-        const borderBottom =
-          window.innerHeight - container.current.offsetHeight;
-        const borderRight = window.innerWidth - container.current.offsetWidth;
-
-        let x = e.clientX + offset[0];
-        let y = e.clientY + offset[1];
-        x = x < borderRight ? x : borderRight;
-        y = y < borderBottom ? y : borderBottom;
-        x = x > borderLeft ? x : borderLeft;
-        y = y > borderTop ? y : borderTop;
-        container.current.style.left = `${x}px`;
-        container.current.style.top = `${y}px`;
-      }
-    },
-    [isDown, offset]
-  );
-
-  React.useEffect(() => {
-    document.addEventListener('mousemove', handleMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMove);
-    };
-  }, [handleMove]);
 
   React.useEffect(() => {
     const cards: number[] = users
@@ -162,62 +132,43 @@ const Results: React.FC<Props> = ({ users, openChat }): ReactElement => {
     });
   }, [users]);
 
-  React.useEffect(() => {
-    if (container.current) {
-      const { x } = container.current.getBoundingClientRect();
-
-      const borderLeft = 0;
-      const borderRight = window.innerWidth - container.current.offsetWidth;
-
-      if (openChat) {
-        let newX = x - 350;
-        newX = newX < borderRight ? newX : borderRight - 10;
-        newX = newX > borderLeft ? newX : borderLeft;
-        container.current.style.left = `${newX}px`;
-      } else {
-        let newX = x + 350;
-        newX = newX < borderRight ? newX : borderRight - 10;
-        newX = newX > borderLeft ? newX : borderLeft;
-        container.current.style.left = `${newX}px`;
-      }
-    }
-  }, [openChat]);
-
   const handleHidden = () => {
     if (container.current) {
       container.current.style.display = 'none';
     }
   };
 
-  return (
-    <div
-      className={classes.root}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      ref={container}
-    >
-      <div className={classes.title}>
-        <div>Resultado:</div>
-        <div className={classes.close} onClick={handleHidden}>
-          <MdClose />
-        </div>
-      </div>
+  const stopEvents = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
 
-      <div className={classes.item}>
-        <div>Maior:</div>
-        <div className={classes.bold}>{state.bigger}</div>
-      </div>
-      <div className={classes.item}>
-        <div>Menor:</div>
-        <div className={classes.bold}>{state.minor}</div>
-      </div>
-      <div className={classes.item}>
-        <div>Moda:</div>
-        <div className={classes.bold}>{state.moda}</div>
-      </div>
-      <div className={`${classes.item} ${classes.media}`}>
-        <div>Média:</div>
-        <div className={classes.bold}>{state.media}</div>
+  return (
+    <div className={classes.backdrop} ref={container} onClick={handleHidden}>
+      <div className={classes.root} onClick={stopEvents}>
+        <div className={classes.title}>
+          <div>Resultado:</div>
+          <div className={classes.close} onClick={handleHidden}>
+            <MdClose />
+          </div>
+        </div>
+
+        <div className={classes.item}>
+          <div>Maior:</div>
+          <div className={classes.bold}>{state.bigger}</div>
+        </div>
+        <div className={classes.item}>
+          <div>Menor:</div>
+          <div className={classes.bold}>{state.minor}</div>
+        </div>
+        <div className={classes.item}>
+          <div>Moda:</div>
+          <div className={classes.bold}>{state.moda}</div>
+        </div>
+        <div className={`${classes.item} ${classes.media}`}>
+          <div>Média:</div>
+          <div className={classes.bold}>{state.media}</div>
+        </div>
       </div>
     </div>
   );
