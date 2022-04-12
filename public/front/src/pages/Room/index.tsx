@@ -21,6 +21,7 @@ import Chat from './Chat';
 import Results from './Results';
 import Shared from './Shared';
 import { CardOption } from './ListUsers/cards';
+import { getRandomColor } from '../../utils/colors';
 
 const manager = new Manager(config.urlServer);
 const socket = manager.socket('/room');
@@ -50,6 +51,7 @@ const Room: React.FC = (): ReactElement => {
       username: name,
       isPlayer,
       cardSelected,
+      color: getRandomColor(),
       id: uuid(),
     };
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -230,6 +232,7 @@ const Room: React.FC = (): ReactElement => {
         onSubmit={handleSubmitChat}
         messages={messages}
         notification={notificationChat}
+        user={user}
       />
     </div>
   );

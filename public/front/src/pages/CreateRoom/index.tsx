@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import config from '../../config/config';
 import { User } from '../../interfaces/user';
+import { getRandomColor } from '../../utils/colors';
 import { CardOption } from '../Room/ListUsers/cards';
 
 import AddRoom from './AddRoom';
@@ -40,6 +41,7 @@ const CreateRoom: React.FC = (): ReactElement => {
       username: name,
       isPlayer,
       cardSelected,
+      color: getRandomColor(),
       id: uuid(),
     };
     localStorage.setItem('user', JSON.stringify(newUser));

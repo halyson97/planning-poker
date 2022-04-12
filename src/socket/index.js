@@ -204,6 +204,7 @@ const roomControler = function(socket, io){
                 user: socket.user.username,
                 text: message,
                 id: socket.user.id,
+                color: socket.user.color,
                 date: new Date(),
             });
             for (let user of room.users) {

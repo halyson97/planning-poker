@@ -7,4 +7,5 @@ export interface User {
   isPlayer: boolean;
   message?: string;
   cardSelected?: CardOption;
+  color?: string;
 }
