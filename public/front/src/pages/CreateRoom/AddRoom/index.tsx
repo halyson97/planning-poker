@@ -64,6 +64,7 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
     textAlign: 'center',
     color: '#777',
+    margin: 'auto',
     marginTop: 20,
   },
 
