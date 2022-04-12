@@ -20,6 +20,8 @@ import RoomNotFound from './RoomNotFound';
 import Chat from './Chat';
 import Results from './Results';
 import Shared from './Shared';
+import { CardOption } from './ListUsers/cards';
+import { getRandomColor } from '../../utils/colors';
 
 const manager = new Manager(config.urlServer);
 const socket = manager.socket('/room');
@@ -40,10 +42,16 @@ const Room: React.FC = (): ReactElement => {
   const [notificationChat, setNotificationChat] = React.useState(false);
   const [messages, setMessages] = React.useState([]);
 
-  const handleJoin = (name: string, isPlayer: boolean): void => {
+  const handleJoin = (
+    name: string,
+    isPlayer: boolean,
+    cardSelected: CardOption
+  ): void => {
     const newUser: User = {
       username: name,
       isPlayer,
+      cardSelected,
+      color: getRandomColor(),
       id: uuid(),
     };
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -105,7 +113,7 @@ const Room: React.FC = (): ReactElement => {
       ? JSON.parse(localStorage.getItem('user') || '')
       : null;
 
-    if (userSaved) {
+    if (userSaved?.cardSelected) {
       setUser(userSaved);
       socket.emit('join-room', { roomId, user: userSaved });
     }
@@ -224,6 +232,7 @@ const Room: React.FC = (): ReactElement => {
         onSubmit={handleSubmitChat}
         messages={messages}
         notification={notificationChat}
+        user={user}
       />
     </div>
   );

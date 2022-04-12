@@ -11,9 +11,9 @@ const useStyles = makeStyles({
   button: {
     padding: 5,
     width: '100px',
-    margin: 5,
+    margin: 10,
     borderRadius: 5,
-    border: '1px solid #ccc',
+    border: '2px solid #ccc',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -22,6 +22,26 @@ const useStyles = makeStyles({
   disabled: {
     color: '#999',
     cursor: 'not-allowed',
+  },
+  buttonShow: {
+    borderColor: '#7057de',
+    color: '#7057de',
+    fontWeight: 600,
+    transition: '0.3s',
+    '&:hover': {
+      background: '#7057de',
+      color: '#fff',
+    },
+  },
+  buttonClear: {
+    borderColor: '#d32f2f',
+    color: '#d32f2f',
+    fontWeight: 600,
+    transition: '0.3s',
+    '&:hover': {
+      backgroundColor: '#d32f2f',
+      color: '#fff',
+    },
   },
 });
 
@@ -54,13 +74,17 @@ const Buttons: React.FC<Props> = ({
     <div className={classes.root}>
       <div
         onClick={handleClickShow}
-        className={`${classes.button} ${disabled && classes.disabled}`}
+        className={`${classes.button} ${classes.buttonShow} ${
+          disabled && classes.disabled
+        }`}
       >
         Virar
       </div>
       <div
         onClick={handleClickClear}
-        className={`${classes.button} ${disabled && classes.disabled}`}
+        className={`${classes.button} ${classes.buttonClear} ${
+          disabled && classes.disabled
+        }`}
       >
         Limpar
       </div>
