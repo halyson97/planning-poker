@@ -27,11 +27,17 @@ const useStyles = makeStyles({
   itemCard: {
     width: '100px',
     height: '150px',
-    border: '1px solid #cccccc',
+    border: '2px solid transparent',
     borderRadius: '8px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    background: '#7057de33',
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    fontWeight: 600,
+    fontSize: 18,
+    color: '#7057de',
   },
   itemName: {
     width: 100,
@@ -41,9 +47,10 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
   },
   card: {
-    background: '#7057de33',
-    backgroundPosition: 'center',
-    backgroundSize: 'cover',
+    border: '2px solid #7057de',
+  },
+  cardGrey: {
+    filter: 'grayscale(1)',
   },
 });
 
@@ -96,17 +103,18 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
           <div className={classes.item}>
             <ReactCardFlip isFlipped={show} flipDirection="horizontal">
               <div
-                className={`${classes.itemCard} ${user.card && classes.card}`}
+                className={`${classes.itemCard} ${
+                  !user.card && classes.cardGrey
+                }`}
                 onClick={handleClickCard}
                 style={{
-                  backgroundImage: user.card
-                    ? `url(${backgroundCard.card})`
-                    : '',
+                  backgroundImage: `url(${user?.cardSelected?.card})`,
                 }}
               ></div>
-              <div className={classes.itemCard}>{show && user.card}</div>
+              <div className={`${classes.itemCard} ${show && classes.card}`}>
+                {show && user.card}
+              </div>
             </ReactCardFlip>
-
             <Tooltip title={`${user.username}`} arrow>
               <div className={classes.itemName}>
                 {user.username === userLocal ? 'Eu' : user.username}

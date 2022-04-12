@@ -8,6 +8,8 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { cardsBack, CardOption } from '../ListUsers/cards';
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -18,6 +20,8 @@ const useStyles = makeStyles({
     alignItems: 'center',
     background: '#fff',
     zIndex: 1000,
+    padding: 10,
+    boxSizing: 'border-box',
   },
   form: {
     display: 'flex',
@@ -53,12 +57,46 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
     textAlign: 'center',
     color: '#777',
+    margin: 'auto',
     marginTop: 20,
+  },
+
+  contentCards: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    padding: '10px 10px',
+    maxWidth: 500,
+    flexWrap: 'wrap',
+    '@media (max-width:500px)': {
+      justifyContent: 'center',
+    },
+  },
+  card: {
+    width: 70,
+    height: 115.5,
+    background: 'blue',
+    borderRadius: 8,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    margin: '0px 5px',
+    cursor: 'pointer',
+    transition: '0.1s',
+    filter: 'grayscale(1)',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      filter: 'grayscale(0)',
+    },
+  },
+  cardSelected: {
+    transform: 'scale(1.1)',
+    filter: 'grayscale(0)',
   },
 });
 
 interface Props {
-  onSubmit: (name: string, isPlayer: boolean) => void;
+  onSubmit: (name: string, isPlayer: boolean, cardSelected: CardOption) => void;
 }
 
 const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
@@ -66,10 +104,27 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
 
   const [name, setName] = React.useState('');
   const [isPlayer, setIsPlayer] = React.useState(true);
+  const [cardSelected, setCardSelected] = React.useState<CardOption>();
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    onSubmit(name, isPlayer);
+
+    if (!cardSelected) {
+      return;
+    }
+    onSubmit(name, isPlayer, cardSelected);
   };
+
+  React.useEffect(() => {
+    const userSaved = localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user') || '')
+      : null;
+
+    if (userSaved) {
+      setName(userSaved.username);
+      setIsPlayer(userSaved.isPlayer);
+    }
+  }, []);
+
   return (
     <div className={classes.root}>
       <form onSubmit={handleSubmit} className={classes.form}>
@@ -96,6 +151,26 @@ const AddUser: React.FC<Props> = ({ onSubmit }): ReactElement => {
           }
           label="Entrar como Jogador"
         />
+
+        <div>
+          <Typography variant="body1" component="h4">
+            Selecione a sua carta
+          </Typography>
+          <div className={classes.contentCards}>
+            {cardsBack?.map((card: CardOption) => (
+              <div
+                key={card.id}
+                className={`${classes.card} ${
+                  cardSelected?.id === card.id && classes.cardSelected
+                }`}
+                style={{
+                  backgroundImage: `url(${card.card})`,
+                }}
+                onClick={() => setCardSelected(card)}
+              ></div>
+            ))}
+          </div>
+        </div>
 
         <Button
           type="submit"

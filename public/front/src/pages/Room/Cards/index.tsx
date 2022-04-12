@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   item: {
     width: '75px',
     minWidth: '75px',
-    border: '1px solid #cccccc',
+    border: '2px solid #999',
     height: '100px',
     borderRadius: '8px',
     margin: '10px',
@@ -31,10 +31,20 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: 18,
+    color: '#777',
+    transition: '0.3s',
+    '&:hover': {
+      borderColor: '#7057de',
+      background: '#7057de33',
+      color: '#7057de',
+    },
   },
   selected: {
     borderColor: '#7057de',
     background: '#7057de33',
+    color: '#7057de',
   },
 });
 

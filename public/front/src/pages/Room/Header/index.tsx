@@ -16,12 +16,22 @@ const useStyles = makeStyles({
     height: '50px',
   },
   buttonEnter: {
-    height: '35px',
-    border: '1px solid #e75155',
-    borderRadius: '5px',
-    color: '#e75155',
+    padding: 5,
+    width: '100px',
+    borderRadius: 5,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    border: '2px solid #d32f2f',
+    color: '#d32f2f',
     background: '#fff',
     cursor: 'pointer',
+    fontWeight: 600,
+    transition: '0.3s',
+    '&:hover': {
+      backgroundColor: '#d32f2f',
+      color: '#fff',
+    },
   },
 });
 
@@ -59,13 +69,9 @@ const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
         }
         label="Jogador"
       />
-      <Button
-        color="primary"
-        className={classes.buttonEnter}
-        onClick={exitRoom}
-      >
+      <div color="primary" className={classes.buttonEnter} onClick={exitRoom}>
         Sair da sala
-      </Button>
+      </div>
     </div>
   );
 };

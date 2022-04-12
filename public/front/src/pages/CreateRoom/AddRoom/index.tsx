@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { User } from '../../../interfaces/user';
+import { CardOption, cardsBack } from '../../Room/ListUsers/cards';
 
 const useStyles = makeStyles({
   root: {
@@ -65,10 +66,43 @@ const useStyles = makeStyles({
     color: '#777',
     marginTop: 20,
   },
+
+  contentCards: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    padding: '10px 10px',
+    maxWidth: 500,
+    flexWrap: 'wrap',
+    '@media (max-width:500px)': {
+      justifyContent: 'center',
+    },
+  },
+  card: {
+    width: 70,
+    height: 115.5,
+    background: 'blue',
+    borderRadius: 8,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    margin: '0px 5px',
+    cursor: 'pointer',
+    transition: '0.1s',
+    filter: 'grayscale(1)',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      filter: 'grayscale(0)',
+    },
+  },
+  cardSelected: {
+    transform: 'scale(1.1)',
+    filter: 'grayscale(0)',
+  },
 });
 
 interface Props {
-  onSubmit: (name: string, isPlayer: boolean) => void;
+  onSubmit: (name: string, isPlayer: boolean, cardSelected: CardOption) => void;
   user: User | undefined;
 }
 
@@ -77,9 +111,13 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
 
   const [name, setName] = React.useState(user?.username || '');
   const [isPlayer, setIsPlayer] = React.useState(true);
+  const [cardSelected, setCardSelected] = React.useState<CardOption>();
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    onSubmit(name, isPlayer);
+    if (!cardSelected) {
+      return;
+    }
+    onSubmit(name, isPlayer, cardSelected);
   };
 
   const joinRoom = () => {
@@ -88,6 +126,9 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
 
   React.useEffect(() => {
     setName(user?.username || '');
+    if (user?.cardSelected) {
+      setCardSelected(user?.cardSelected);
+    }
   }, [user]);
 
   return (
@@ -116,6 +157,26 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
           }
           label="Entrar como Jogador"
         />
+
+        <div>
+          <Typography variant="body1" component="h4">
+            Selecione a sua carta
+          </Typography>
+          <div className={classes.contentCards}>
+            {cardsBack?.map((card: CardOption) => (
+              <div
+                key={card.id}
+                className={`${classes.card} ${
+                  cardSelected?.id === card.id && classes.cardSelected
+                }`}
+                style={{
+                  backgroundImage: `url(${card.card})`,
+                }}
+                onClick={() => setCardSelected(card)}
+              ></div>
+            ))}
+          </div>
+        </div>
 
         <Button
           type="submit"
