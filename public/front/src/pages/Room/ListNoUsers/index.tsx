@@ -12,7 +12,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     padding: 10,
     boxSizing: 'border-box',
-    top: 200,
+    top: 50,
     left: 10,
     minHeight: 50,
     border: '1px solid #ccc',

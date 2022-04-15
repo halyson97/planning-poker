@@ -37,6 +37,7 @@ const CreateRoom: React.FC = (): ReactElement => {
     isPlayer: boolean,
     cardSelected: CardOption
   ) => {
+    const typeGame = localStorage.getItem('typeGame');
     const newUser: User = {
       username: name,
       isPlayer,
@@ -45,7 +46,7 @@ const CreateRoom: React.FC = (): ReactElement => {
       id: uuid(),
     };
     localStorage.setItem('user', JSON.stringify(newUser));
-    socket.emit('create-room', newUser);
+    socket.emit('create-room', { newUser, typeGame });
   };
 
   return (

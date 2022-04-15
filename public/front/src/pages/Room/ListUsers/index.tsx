@@ -89,7 +89,7 @@ const ListUsers: React.FC<Props> = ({ users, show }): ReactElement => {
     if (cardSaved) {
       setBackgroundCard(cardSaved);
     }
-  }, []);
+  }, [users]);
 
   return (
     <div className={classes.root}>

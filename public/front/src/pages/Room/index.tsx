@@ -13,7 +13,7 @@ import Header from './Header';
 import ListUsers from './ListUsers';
 import Cards from './Cards';
 
-import { defaultCards } from './cards';
+import { defaultCards, fibonacciCards } from './cards';
 import Timer from './Timer';
 import Buttons from './Buttons';
 import RoomNotFound from './RoomNotFound';
@@ -22,6 +22,7 @@ import Results from './Results';
 import Shared from './Shared';
 import { CardOption } from './ListUsers/cards';
 import { getRandomColor } from '../../utils/colors';
+import { TypeGameEnum } from '../../interfaces/typeGame';
 
 const manager = new Manager(config.urlServer);
 const socket = manager.socket('/room');
@@ -29,6 +30,9 @@ const socket = manager.socket('/room');
 const Room: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();
   const [users, setUsers] = React.useState<User[]>([]);
+  const [typeGame, setTypeGame] = React.useState<TypeGameEnum>(
+    TypeGameEnum.default
+  );
   const { roomId } = useParams<{ roomId: string }>();
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
@@ -41,6 +45,13 @@ const Room: React.FC = (): ReactElement => {
   const [openChat, setOpenChat] = React.useState(false);
   const [notificationChat, setNotificationChat] = React.useState(false);
   const [messages, setMessages] = React.useState([]);
+
+  const audio = React.useMemo(() => new Audio('/sounds/string.mp3'), []);
+
+  const handleChangeTypeGame = (type: TypeGameEnum) => {
+    setTypeGame(type);
+    socket.emit('change-type-game', { roomId, user, typeGame: type });
+  };
 
   const handleJoin = (
     name: string,
@@ -104,7 +115,6 @@ const Room: React.FC = (): ReactElement => {
   };
 
   const playSound = (): void => {
-    const audio = new Audio('/sounds/string.mp3');
     audio.play();
   };
 
@@ -122,6 +132,7 @@ const Room: React.FC = (): ReactElement => {
       setUsers(state.users);
       setMessages(state.messages);
       setRoomCode(state.roomCode);
+      setTypeGame(state.typeGame);
       const newUser = state.users.find(
         (item: User) => item.id === userSaved?.id
       );
@@ -154,9 +165,17 @@ const Room: React.FC = (): ReactElement => {
       setMessages(messages);
       setNotificationChat(true);
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.id !== userSaved?.id) {
+      if (
+        lastMessage?.type === 'message' &&
+        lastMessage?.id !== userSaved?.id
+      ) {
         playSound();
       }
+    });
+
+    socket.on('change-type-game', (typeGame: TypeGameEnum) => {
+      setTypeGame(typeGame);
+      localStorage.setItem('typeGame', typeGame);
     });
 
     socket.on('room-not-found', () => {
@@ -164,6 +183,17 @@ const Room: React.FC = (): ReactElement => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
+
+  React.useEffect(() => {
+    console.log('typeGame', typeGame);
+    if (typeGame) {
+      const options = {
+        [TypeGameEnum.default]: defaultCards,
+        [TypeGameEnum.fibonacci]: fibonacciCards,
+      };
+      setCards(options[typeGame]);
+    }
+  }, [typeGame]);
 
   React.useEffect(() => {
     return () => {
@@ -188,7 +218,12 @@ const Room: React.FC = (): ReactElement => {
         {roomNotFound && <RoomNotFound />}
         {!user && <AddUser onSubmit={handleJoin} />}
 
-        <Header checked={!!user?.isPlayer} onChange={handleChangeIsPlayer} />
+        <Header
+          checked={!!user?.isPlayer}
+          onChange={handleChangeIsPlayer}
+          typeGame={typeGame}
+          onChangeTypeGame={handleChangeTypeGame}
+        />
 
         {filterUsers(users, false).length > 0 && (
           <ListNoUsers users={filterUsers(users, false)} />
@@ -215,7 +250,7 @@ const Room: React.FC = (): ReactElement => {
               />
             )}
           </div>
-          {Boolean(filterUsers(users).length) && (
+          {!!user?.isPlayer && Boolean(filterUsers(users).length) && (
             <Buttons
               handleShow={handleShow}
               handleClear={handleClear}

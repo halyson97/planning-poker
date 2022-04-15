@@ -1,15 +1,10 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-  Fab,
-  Badge,
-  IconButton,
-  TextField,
-  Avatar,
-  Tooltip,
-} from '@material-ui/core';
+import { Fab, Badge, IconButton, TextField } from '@material-ui/core';
 import { MdMessage, MdClose, MdSend } from 'react-icons/md';
 import { User } from '../../../interfaces/user';
+import Message from './Message';
+import Action from './Action';
 
 const useStyles = makeStyles({
   root: {
@@ -56,63 +51,6 @@ const useStyles = makeStyles({
     width: 350,
     paddingTop: 10,
     boxSizing: 'border-box',
-  },
-  contentMessage: {
-    padding: '5px 10px',
-    boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  contentMessageUser: {
-    justifyContent: 'flex-end',
-  },
-
-  titleMessage: {
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  hourMessage: {
-    fontWeight: 'initial',
-    marginLeft: 5,
-  },
-  contentAvatar: {
-    width: 40,
-    height: 40,
-  },
-  message: {
-    fontSize: '0.9rem',
-    wordWrap: 'break-word',
-    background: '#e42565',
-    color: '#fff',
-    maxWidth: 'calc(100% - 50px)',
-    padding: 10,
-    boxSizing: 'border-box',
-    borderRadius: 10,
-    marginLeft: 10,
-    boxShadow: '0px 0px 10px #e0e0e0',
-    fontWeight: 'bold',
-    paddingBottom: 20,
-    paddingRight: 15,
-    wordBreak: 'break-word',
-    position: 'relative',
-    minWidth: 60,
-  },
-  messageUser: {
-    background: '#fff',
-    boxShadow: '0px 0px 10px #e0e0e0',
-    color: '#444',
-  },
-  messageShort: {
-    textAlign: 'center',
-  },
-
-  hour: {
-    fontSize: '0.58rem',
-    fontWeight: 'bold',
-    position: 'absolute',
-    right: 8,
-    bottom: 5,
   },
 
   contentInput: {
@@ -169,32 +107,6 @@ const Chat: React.FC<Props> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
-    const newDate = new Date(date);
-    const hours =
-      newDate.getHours() > 9 ? newDate.getHours() : `0${newDate.getHours()}`;
-    const minutes =
-      newDate.getMinutes() > 9
-        ? newDate.getMinutes()
-        : `0${newDate.getMinutes()}`;
-    return `${hours}:${minutes}`;
-  };
-
-  const getAvatarName = (name: string) => {
-    const nameArray = name.split(' ');
-    if (nameArray.length > 1) {
-      return (
-        nameArray[0].charAt(0).toUpperCase() +
-        nameArray[nameArray.length - 1].charAt(0).toUpperCase()
-      );
-    }
-
-    return (
-      nameArray[0].charAt(0).toUpperCase() +
-      nameArray[0].charAt(1).toUpperCase()
-    );
-  };
-
   React.useEffect(() => {
     if (elementMessages.current) {
       elementMessages.current.scrollTop = elementMessages.current.scrollHeight;
@@ -211,41 +123,18 @@ const Chat: React.FC<Props> = ({
       </div>
       <div className={classes.contentMessages} ref={elementMessages}>
         {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`${classes.contentMessage} ${
-              message.id === user?.id && classes.contentMessageUser
-            }`}
-          >
-            {message.id !== user?.id && (
-              <div className={classes.contentAvatar}>
-                {(index === 0 ||
-                  (index > 0 && message.id !== messages[index - 1].id)) && (
-                  <Tooltip title={message.user} placement="bottom" arrow>
-                    <Avatar style={{ background: message?.color }}>
-                      {getAvatarName(message.user)}
-                    </Avatar>
-                  </Tooltip>
-                )}
-              </div>
+          <React.Fragment key={index}>
+            {message.type === 'message' ? (
+              <Message
+                index={index}
+                message={message}
+                user={user}
+                lastMessage={index > 0 ? messages[index - 1] : undefined}
+              />
+            ) : (
+              <Action message={message} />
             )}
-            <div
-              className={`${classes.message} ${
-                message.id === user?.id && classes.messageUser
-              }
-              ${message.text.length < 6 && classes.messageShort}`}
-              style={
-                message?.color && message.id !== user?.id
-                  ? {
-                      background: message?.color,
-                    }
-                  : undefined
-              }
-            >
-              {message.text}
-              <span className={classes.hour}>{formatDate(message.date)}</span>
-            </div>
-          </div>
+          </React.Fragment>
         ))}
       </div>
 

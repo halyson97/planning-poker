@@ -100,6 +100,22 @@ const useStyles = makeStyles({
     transform: 'scale(1.1)',
     filter: 'grayscale(0)',
   },
+  error: {
+    color: 'red',
+    animation: `$transform 0.5s forwards`,
+  },
+
+  '@keyframes transform': {
+    '0%': {
+      transform: 'scale(1)',
+    },
+    '50%': {
+      transform: 'scale(1.01)',
+    },
+    '100%': {
+      transform: 'scale(1)',
+    },
+  },
 });
 
 interface Props {
@@ -113,9 +129,12 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
   const [name, setName] = React.useState(user?.username || '');
   const [isPlayer, setIsPlayer] = React.useState(true);
   const [cardSelected, setCardSelected] = React.useState<CardOption>();
+  const [error, setError] = React.useState(false);
+
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     if (!cardSelected) {
+      setError(true);
       return;
     }
     onSubmit(name, isPlayer, cardSelected);
@@ -123,6 +142,11 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
 
   const joinRoom = () => {
     window.location.hash = `#/join-room`;
+  };
+
+  const handleCardSelected = (card: CardOption) => {
+    setCardSelected(card);
+    setError(false);
   };
 
   React.useEffect(() => {
@@ -160,7 +184,11 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
         />
 
         <div>
-          <Typography variant="body1" component="h4">
+          <Typography
+            variant="body1"
+            component="h4"
+            className={error ? classes.error : undefined}
+          >
             Selecione a sua carta
           </Typography>
           <div className={classes.contentCards}>
@@ -173,7 +201,7 @@ const AddRoom: React.FC<Props> = ({ onSubmit, user }): ReactElement => {
                 style={{
                   backgroundImage: `url(${card.card})`,
                 }}
-                onClick={() => setCardSelected(card)}
+                onClick={() => handleCardSelected(card)}
               ></div>
             ))}
           </div>

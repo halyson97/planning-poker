@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, FormControlLabel, Switch } from '@material-ui/core';
+import { FormControlLabel, Switch } from '@material-ui/core';
+import { TypeGameEnum } from '../../../interfaces/typeGame';
 
 const useStyles = makeStyles({
   root: {
@@ -33,14 +34,61 @@ const useStyles = makeStyles({
       color: '#fff',
     },
   },
+
+  typeGame: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    border: '2px solid #7057de',
+    boxSizing: 'border-box',
+    borderRadius: 5,
+    marginRight: 10,
+    transition: '0.4s',
+    fontWeight: 600,
+    height: 32,
+  },
+  typeGameItem: {
+    width: 100,
+    height: '100%',
+    boxSizing: 'border-box',
+    background: '#7057de',
+    color: '#fff',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    cursor: 'pointer',
+    transition: '0.3s',
+    '&:hover': {
+      background: '#7057de',
+      color: '#fff',
+    },
+    '&:first-child': {
+      borderRight: '1px solid #fff',
+    },
+  },
+  typeGameItemNotSelected: {
+    background: '#fff',
+    color: '#7057de',
+  },
+  disabled: {
+    pointerEvents: 'none',
+  },
 });
 
 interface Props {
   checked: boolean;
+  typeGame: TypeGameEnum;
   onChange: (value: boolean) => void;
+  onChangeTypeGame: (type: TypeGameEnum) => void;
 }
 
-const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
+const Buttons: React.FC<Props> = ({
+  checked,
+  onChange,
+  typeGame,
+  onChangeTypeGame,
+}): ReactElement => {
   const classes = useStyles();
 
   const [isPlayer, setIsPlayer] = React.useState(checked);
@@ -48,6 +96,12 @@ const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
   const handleChange = (value: boolean): void => {
     setIsPlayer(value);
     onChange(value);
+  };
+
+  const handleChangeTypeGame = (type: TypeGameEnum) => {
+    if (type !== typeGame) {
+      onChangeTypeGame(type);
+    }
   };
 
   const exitRoom = () => {
@@ -60,6 +114,25 @@ const Buttons: React.FC<Props> = ({ checked, onChange }): ReactElement => {
 
   return (
     <div className={classes.root}>
+      <div className={classes.typeGame}>
+        <div
+          className={`${classes.typeGameItem} ${
+            typeGame === TypeGameEnum.fibonacci &&
+            classes.typeGameItemNotSelected
+          } ${!checked && classes.disabled}`}
+          onClick={() => handleChangeTypeGame(TypeGameEnum.default)}
+        >
+          Tradicional
+        </div>
+        <div
+          className={`${classes.typeGameItem} ${
+            typeGame === TypeGameEnum.default && classes.typeGameItemNotSelected
+          } ${!checked && classes.disabled}`}
+          onClick={() => handleChangeTypeGame(TypeGameEnum.fibonacci)}
+        >
+          Fibonacci
+        </div>
+      </div>
       <FormControlLabel
         control={
           <Switch
