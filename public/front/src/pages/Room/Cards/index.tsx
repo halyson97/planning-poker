@@ -16,7 +16,7 @@ const useStyles = makeStyles({
       height: 10,
       backgroundColor: '#f5f5f5',
     },
-    '@media (min-width:602px)': {
+    '@media (min-width:700px)': {
       justifyContent: 'center',
     },
   },
@@ -58,7 +58,7 @@ const Cards: React.FC<Props> = ({ cards, onClick }): ReactElement => {
 
   return (
     <div className={classes.root}>
-      {cards.map((card) => (
+      {cards?.map((card) => (
         <div
           key={card.value}
           className={`${classes.item} ${card.selected && classes.selected}`}

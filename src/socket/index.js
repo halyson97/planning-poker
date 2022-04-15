@@ -1,5 +1,10 @@
 const uuid = require('uuid');
 
+const TYPE_GAME = {
+    default: 'DEFAULT',
+    fibonacci: 'FIBONACCI',
+};
+
 const state = {
     users: [],
     rooms: {},
@@ -23,7 +28,7 @@ const homeController = function(socket, io){
         return text;
     };
 
-    socket.on('create-room', (user) => {
+    socket.on('create-room', ({ typeGame }) => {
         const roomId = uuid.v4();
         state.rooms[roomId] = {
             id: roomId,
@@ -31,6 +36,7 @@ const homeController = function(socket, io){
             users: [],
             messages: [],
             isPlayer: true,
+            typeGame: typeGame || TYPE_GAME.default,
         };
         socket.emit('room-created', roomId);
     });
@@ -96,6 +102,7 @@ const roomControler = function(socket, io){
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                     roomCode: room.code,
+                    typeGame: room.typeGame,
                 });
             }
         } else {
@@ -122,6 +129,7 @@ const roomControler = function(socket, io){
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                     roomCode: room.code,
+                    typeGame: room.typeGame,
                 });
             }
         } else {
@@ -144,6 +152,7 @@ const roomControler = function(socket, io){
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                     roomCode: room.code,
+                    typeGame: room.typeGame,
                 });
             }
         } else {
@@ -164,6 +173,7 @@ const roomControler = function(socket, io){
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                     roomCode: room.code,
+                    typeGame: room.typeGame,
                 });
                 user.emit('clear');
             }
@@ -189,6 +199,7 @@ const roomControler = function(socket, io){
                     users: room.users.map(socketUser => socketUser.user),
                     messages: room.messages,
                     roomCode: room.code,
+                    typeGame: room.typeGame,
                 });
                 user.emit('show');
             }
@@ -206,9 +217,37 @@ const roomControler = function(socket, io){
                 id: socket.user.id,
                 color: socket.user.color,
                 date: new Date(),
+                type: 'message',
             });
             for (let user of room.users) {
                 user.emit('messages', room.messages);
+            }
+        } else {
+            socket.emit('room-not-found'); 
+        }
+    });
+
+    socket.on('change-type-game', ({ roomId, user, typeGame }) => {
+
+        const typeGameTranslate = (type) => {
+            const options = {
+                [TYPE_GAME.default]: 'Tradicional',
+                [TYPE_GAME.fibonacci]: 'Fibonacci',
+            };
+            return options[type];
+        };
+        const room = state.rooms[roomId];
+        if (room) {
+            room.typeGame = typeGame;
+            room.messages.push({
+                text: `${user.username.split(' ')[0]} alterou para o modo ${typeGameTranslate(typeGame)}`,
+                color: user.color,
+                date: new Date(),
+                type: 'action',
+            });
+            for (let userRoom of room.users) {
+                userRoom.emit('change-type-game', typeGame);
+                userRoom.emit('messages', room.messages);
             }
         } else {
             socket.emit('room-not-found'); 
