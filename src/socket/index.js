@@ -43,9 +43,7 @@ const homeController = function(socket, io){
 
     socket.on('verify-connect', ({ id }) => {
         for(const user of state.users){
-            console.log(user.id, id);
             if(user.id === id){
-                console.log('disconnect', id)
                 user.emit('is-disconnected');
             }
         }
@@ -175,7 +173,7 @@ const roomControler = function(socket, io){
                     roomCode: room.code,
                     typeGame: room.typeGame,
                 });
-                user.emit('clear');
+                user.emit('clear', { typeGame: room.typeGame });
             }
         } else {
             socket.emit('room-not-found'); 
