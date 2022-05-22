@@ -145,10 +145,13 @@ const Room: React.FC = (): ReactElement => {
       setUsers(users);
     });
 
-    socket.on('clear', () => {
+    socket.on('clear', ({ typeGame }: { typeGame: TypeGameEnum }) => {
       setShow(false);
       setShowTimer(false);
-      const newCards = cards.map((item) => {
+
+      const useCards =
+        typeGame === TypeGameEnum.fibonacci ? fibonacciCards : defaultCards;
+      const newCards = useCards.map((item) => {
         return {
           ...item,
           selected: false,
@@ -181,11 +184,20 @@ const Room: React.FC = (): ReactElement => {
     socket.on('room-not-found', () => {
       setRoomNotFound(true);
     });
+
+    return () => {
+      socket.off('user-joined');
+      socket.off('user-left');
+      socket.off('clear');
+      socket.off('show');
+      socket.off('messages');
+      socket.off('change-type-game');
+      socket.off('room-not-found');
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   React.useEffect(() => {
-    console.log('typeGame', typeGame);
     if (typeGame) {
       const options = {
         [TypeGameEnum.default]: defaultCards,
