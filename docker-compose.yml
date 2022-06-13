@@ -17,6 +17,9 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - planning-poker-network
+
   cache:
     container_name: cache-redis
     image: redis:latest
@@ -26,17 +29,14 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     volumes: 
       - cache:/data
-  nginx:
-    container_name: nginx
-    image: nginx
-    volumes:
-      - ./templates:/etc/nginx/templates
-    ports:
-      - 8080:80
-    environment:
-      - NGINX_HOST=halyson.xyz
-      - NGINX_PORT=80
+    networks:
+      - planning-poker-network
+
 volumes:
   cache:
     driver: local  
   nodemodules: {}
+
+networks:
+  planning-poker-network:
+    driver: bridge 
