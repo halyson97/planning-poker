@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const redis = require('redis');
 
 const TYPE_GAME = {
     default: 'DEFAULT',
@@ -12,11 +13,33 @@ const state = {
     numUsers: 0,
 };
 
+console.log({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD
+});
+
+const client = redis.createClient({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD
+});
+client.on('error', (err) => console.log('Redis Client Error', err));
+
 let timeoutClearRooms;
 
 const getMessages = require('./messages');
 
-const homeController = function(socket, io){
+const homeController = async function(socket, io){
+    const subscriber = client.duplicate();
+    await subscriber.connect();
+    console.log('connected');
+
+    await subscriber.set('key', 'value');
+    const value = await subscriber.get('key');
+
+    console.log('value', value);
+    await subscriber.disconnect();
 
     const generateCode = (lenght) => {
         let text = "";
