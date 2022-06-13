@@ -31,16 +31,23 @@ let timeoutClearRooms;
 const getMessages = require('./messages');
 
 const homeController = async function(socket, io){
-    const subscriber = client.duplicate();
-    await subscriber.connect();
-    console.log('connected');
+    try {
+        const subscriber = client.duplicate();
+        await subscriber.connect((process.env.REDIS_HOST, process.env.REDIS_PORT));
+        console.log('connected');
 
-    await subscriber.set('key', 'value');
-    const value = await subscriber.get('key');
+        await subscriber.set('key', 'value');
+        const value = await subscriber.get('key');
 
-    console.log('value', value);
-    await subscriber.disconnect();
+        console.log('value', value);
+        await subscriber.disconnect();
 
+        console.log('\n');
+
+    } catch(erro) {
+        console.log('error: ', erro);
+    }
+    
     const generateCode = (lenght) => {
         let text = "";
         const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
