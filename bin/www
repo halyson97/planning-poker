@@ -7,9 +7,8 @@
 var socketController = require('../src/socket');
 
 var app = require('../app');
-var debug = require('debug')('back:server');
 var http = require('http');
-const { Server } = require("socket.io");
+const socketio = require("socket.io");
 
 
 /**
@@ -27,7 +26,7 @@ var server = http.createServer(app);
 
 // Socket.io
 // const io = new Server(server);
-const io = require('socket.io')(server, {
+const io = socketio(server, {
   cors: {
     origin: '*',
   }
@@ -101,5 +100,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }
