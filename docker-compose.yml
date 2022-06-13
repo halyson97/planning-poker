@@ -20,7 +20,7 @@ services:
     networks:
       - planning-poker-network
 
-  cache:
+  cache-redis:
     container_name: cache-redis
     image: redis:latest
     restart: always
