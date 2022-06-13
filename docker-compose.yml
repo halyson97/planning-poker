@@ -5,9 +5,9 @@ services:
     build: .
     restart: always
     links:
-      - cache
+      - cache-redis
     depends_on:
-      - cache
+      - cache-redis
     ports:
       - 8000:8000
     volumes:
