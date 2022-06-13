@@ -1,0 +1,32 @@
+version: "3.3"  # optional since v1.27.0
+services:
+  planning-poker:
+    container_name: planning-poker
+    build: .
+    restart: always
+    links:
+      - cache
+    depends_on:
+      - cache
+    ports:
+      - 8000:8000
+    volumes:
+      - ./planning-poker:/src/
+      - nodemodules:/node_modules
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+  cache:
+    container_name: cache-redis
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes: 
+      - cache:/data
+volumes:
+  cache:
+    driver: local  
+  nodemodules: {}
