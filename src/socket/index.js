@@ -20,9 +20,10 @@ console.log({
 });
 
 const client = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    // password: process.env.REDIS_PASSWORD,
+    // host: process.env.REDIS_HOST,
+    // port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD,
+    url: 'redis://'+ process.env.REDIS_HOST + ':' + process.env.REDIS_PORT,
 });
 client.on('error', (err) => console.log('Redis Client Error', err));
 
@@ -33,7 +34,7 @@ const getMessages = require('./messages');
 const homeController = async function(socket, io){
     try {
         const subscriber = client.duplicate();
-        await subscriber.connect((process.env.REDIS_HOST, process.env.REDIS_PORT));
+        await subscriber.connect();
         console.log('connected');
 
         await subscriber.set('key', 'value');
