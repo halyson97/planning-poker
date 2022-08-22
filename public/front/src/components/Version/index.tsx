@@ -75,7 +75,7 @@ interface Props {
 const Version: React.FC<Props> = ({ version, resources }): ReactElement => {
   const classes = useStyles();
 
-  const [showModal, setShowModal] = React.useState(true);
+  const [showModal, setShowModal] = React.useState(false);
 
   return (
     <React.Fragment>
