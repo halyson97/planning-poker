@@ -47,6 +47,10 @@ const Room: React.FC = (): ReactElement => {
   const [messages, setMessages] = React.useState([]);
 
   const audio = React.useMemo(() => new Audio('/sounds/string.mp3'), []);
+  const musicAllEquals = React.useMemo(
+    () => new Audio('/sounds/music.mp3'),
+    []
+  );
 
   const handleChangeTypeGame = (type: TypeGameEnum) => {
     setTypeGame(type);
@@ -114,8 +118,27 @@ const Room: React.FC = (): ReactElement => {
     socket.emit('send-message', { roomId, message });
   };
 
-  const playSound = (): void => {
+  const playSound = React.useCallback((): void => {
     audio.play();
+  }, [audio]);
+
+  const playSoundAllEquals = React.useCallback((): void => {
+    musicAllEquals.play();
+  }, [musicAllEquals]);
+
+  const allEqual = (values: string[]): boolean => {
+    return values.every((value) => value === values[0]);
+  };
+
+  const handleShowTime = () => {
+    setShow(true);
+    setShowTimer(false);
+
+    const cards = users.map((user) => user.card).filter((card) => !!card);
+
+    if (cards.length > 1 && allEqual(cards as string[])) {
+      playSoundAllEquals();
+    }
   };
 
   React.useEffect(() => {
@@ -253,14 +276,7 @@ const Room: React.FC = (): ReactElement => {
               height: 45,
             }}
           >
-            {showTimer && (
-              <Timer
-                callback={() => {
-                  setShow(true);
-                  setShowTimer(false);
-                }}
-              />
-            )}
+            {showTimer && <Timer callback={handleShowTime} />}
           </div>
           {!!user?.isPlayer && Boolean(filterUsers(users).length) && (
             <Buttons
