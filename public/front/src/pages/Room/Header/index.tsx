@@ -1,6 +1,12 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { FormControlLabel, Switch } from '@material-ui/core';
+import {
+  FormControlLabel,
+  IconButton,
+  Switch,
+  Tooltip,
+} from '@material-ui/core';
+import { MdVolumeUp, MdVolumeOff } from 'react-icons/md';
 import { TypeGameEnum } from '../../../interfaces/typeGame';
 
 const useStyles = makeStyles({
@@ -74,20 +80,29 @@ const useStyles = makeStyles({
   disabled: {
     pointerEvents: 'none',
   },
+
+  sounds: {
+    padding: 5,
+    boxSizing: 'border-box',
+  },
 });
 
 interface Props {
   checked: boolean;
+  isSoundActive: boolean;
   typeGame: TypeGameEnum;
   onChange: (value: boolean) => void;
+  onChangeSounds: (value: boolean) => void;
   onChangeTypeGame: (type: TypeGameEnum) => void;
 }
 
 const Buttons: React.FC<Props> = ({
   checked,
+  isSoundActive,
   onChange,
   typeGame,
   onChangeTypeGame,
+  onChangeSounds,
 }): ReactElement => {
   const classes = useStyles();
 
@@ -106,6 +121,10 @@ const Buttons: React.FC<Props> = ({
 
   const exitRoom = () => {
     window.location.hash = `#/create-room`;
+  };
+
+  const handleChangeSounds = (value: boolean): void => {
+    onChangeSounds(value);
   };
 
   React.useEffect(() => {
@@ -132,6 +151,16 @@ const Buttons: React.FC<Props> = ({
         >
           Fibonacci
         </div>
+      </div>
+      <div className={classes.sounds}>
+        <Tooltip
+          title={isSoundActive ? 'Desativar barulhos' : 'Ativar barulhos'}
+          arrow
+        >
+          <IconButton onClick={() => handleChangeSounds(!isSoundActive)}>
+            {isSoundActive ? <MdVolumeUp /> : <MdVolumeOff />}
+          </IconButton>
+        </Tooltip>
       </div>
       <FormControlLabel
         control={

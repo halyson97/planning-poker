@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
 import { Manager } from 'socket.io-client';
@@ -37,6 +38,10 @@ const Room: React.FC = (): ReactElement => {
 
   const [cards, setCards] = React.useState<Card[]>(defaultCards);
 
+  const [isSoundActive, setSoundActive] = React.useState(
+    localStorage.getItem('sounds') === 'ENABLED'
+  );
+
   const [show, setShow] = React.useState(false);
   const [showTimer, setShowTimer] = React.useState(false);
   const [roomNotFound, setRoomNotFound] = React.useState(false);
@@ -51,6 +56,18 @@ const Room: React.FC = (): ReactElement => {
     () => new Audio('/sounds/music.mp3'),
     []
   );
+
+  const stopAudio = React.useCallback((media: HTMLAudioElement): void => {
+    media.pause();
+    media.currentTime = 0;
+  }, []);
+
+  React.useEffect(() => {
+    if (!isSoundActive && audio && musicAllEquals) {
+      stopAudio(audio);
+      stopAudio(musicAllEquals);
+    }
+  }, [isSoundActive, audio, musicAllEquals, stopAudio]);
 
   const handleChangeTypeGame = (type: TypeGameEnum) => {
     setTypeGame(type);
@@ -89,6 +106,11 @@ const Room: React.FC = (): ReactElement => {
     }
   };
 
+  const handleChangeIsSounds = (value: boolean) => {
+    setSoundActive(value);
+    localStorage.setItem('sounds', value ? 'ENABLED' : 'DISABLED');
+  };
+
   const handleClickCard = (card: Card) => {
     const newCards = cards.map((item) => ({
       ...item,
@@ -118,13 +140,17 @@ const Room: React.FC = (): ReactElement => {
     socket.emit('send-message', { roomId, message });
   };
 
-  const playSound = React.useCallback((): void => {
-    audio.play();
-  }, [audio]);
+  const playSound = (): void => {
+    if (localStorage.getItem('sounds') === 'ENABLED') {
+      audio.play();
+    }
+  };
 
-  const playSoundAllEquals = React.useCallback((): void => {
-    musicAllEquals.play();
-  }, [musicAllEquals]);
+  const playSoundAllEquals = (): void => {
+    if (localStorage.getItem('sounds') === 'ENABLED') {
+      musicAllEquals.play();
+    }
+  };
 
   const allEqual = (values: string[]): boolean => {
     return values.every((value) => value === values[0]);
@@ -255,6 +281,8 @@ const Room: React.FC = (): ReactElement => {
 
         <Header
           checked={!!user?.isPlayer}
+          isSoundActive={isSoundActive}
+          onChangeSounds={handleChangeIsSounds}
           onChange={handleChangeIsPlayer}
           typeGame={typeGame}
           onChangeTypeGame={handleChangeTypeGame}
