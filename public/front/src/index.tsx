@@ -6,7 +6,11 @@ import Connect from './Connect';
 
 import * as serviceWorker from './serviceWorkerRegistration';
 
-const resources = ['Som quando todos os votos são iguais', 'Versão'];
+const resources = [
+  'Habilitar/desabilitar barulhos',
+  'Barulho quando todos os votos são iguais',
+  'Notas de versão',
+];
 
 ReactDOM.render(
   <React.StrictMode>

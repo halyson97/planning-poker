@@ -153,7 +153,10 @@ const Buttons: React.FC<Props> = ({
         </div>
       </div>
       <div className={classes.sounds}>
-        <Tooltip title={isSoundActive ? 'Desativar som' : 'Ativar som'} arrow>
+        <Tooltip
+          title={isSoundActive ? 'Desativar barulhos' : 'Ativar barulhos'}
+          arrow
+        >
           <IconButton onClick={() => handleChangeSounds(!isSoundActive)}>
             {isSoundActive ? <MdVolumeUp /> : <MdVolumeOff />}
           </IconButton>
