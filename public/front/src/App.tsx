@@ -5,6 +5,7 @@ import Room from './pages/Room';
 import NotFound from './pages/NotFound';
 import CreateRoom from './pages/CreateRoom';
 import JoinRoom from './pages/JoinRoom';
+import Rooms from './pages/Rooms';
 
 const App: React.FC = (): ReactElement => {
   return (
@@ -21,6 +22,9 @@ const App: React.FC = (): ReactElement => {
         </Route>
         <Route exact path="/rooms/:roomId">
           <Room />
+        </Route>
+        <Route exact path="/view-rooms">
+          <Rooms />
         </Route>
         <Route path="*">
           <NotFound />

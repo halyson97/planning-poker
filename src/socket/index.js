@@ -16,7 +16,36 @@ let timeoutClearRooms;
 
 const getMessages = require('./messages');
 
-const homeController = async function(socket, io){
+const roomControler = function(socket, io){
+
+    const schedulerCloseEmptyRooms = () => {
+        clearTimeout(timeoutClearRooms);
+        setTimeout(() => {
+            const rooms = Object.keys(state.rooms);
+            for (let i = 0; i < rooms.length; i++) {
+                const room = rooms[i];
+                if (state.rooms[room].users.length === 0) {
+                    delete state.rooms[room];
+                }
+            }
+            socket.broadcast.emit('rooms', getRooms());
+        }, 30000);
+
+    };
+
+    const disconnect = () => {
+        const room = state.rooms[socket.roomId];
+        if (room) {
+            room.users = room.users.filter(socketUser => socketUser.user.id !== socket.user.id);
+            for (let user of room.users) {
+                user.emit('user-left', room.users.map(socketUser => socketUser.user));
+            }
+            socket.broadcast.emit('rooms', getRooms());
+        }
+
+        schedulerCloseEmptyRooms();
+    };
+
     const generateCode = (lenght) => {
         let text = "";
         const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -26,6 +55,20 @@ const homeController = async function(socket, io){
 
         return text;
     };
+
+    const getRooms = () => {
+        const rooms = Object.keys(state.rooms).map(id => {
+            const item = state.rooms[id];
+            return {
+                id: item.id,
+                code: item.code,
+                users: item.users.length,
+                typeGame: item.typeGame,
+            }
+        });
+
+        return rooms;
+    }
 
     socket.on('create-room', ({ typeGame }) => {
         const roomId = uuid.v4();
@@ -38,6 +81,7 @@ const homeController = async function(socket, io){
             typeGame: typeGame || TYPE_GAME.default,
         };
         socket.emit('room-created', roomId);
+        socket.broadcast.emit('rooms', getRooms());
     });
 
     socket.on('verify-connect', ({ id }) => {
@@ -56,37 +100,12 @@ const homeController = async function(socket, io){
 
     socket.on('on-disconnect', (id) => {
         state.users = state.users.filter(user => user.id !== id);
+        socket.broadcast.emit('rooms', getRooms());
     });
 
-}
-
-const roomControler = function(socket, io){
-
-    const schedulerCloseEmptyRooms = () => {
-        clearTimeout(timeoutClearRooms);
-        setTimeout(() => {
-            const rooms = Object.keys(state.rooms);
-            for (let i = 0; i < rooms.length; i++) {
-                const room = rooms[i];
-                if (state.rooms[room].length === 0) {
-                    delete state.rooms[room];
-                }
-            }
-        }, 30000);
-
-    };
-
-    const disconnect = () => {
-        const room = state.rooms[socket.roomId];
-        if (room) {
-            room.users = room.users.filter(socketUser => socketUser.user.id !== socket.user.id);
-            for (let user of room.users) {
-                user.emit('user-left', room.users.map(socketUser => socketUser.user));
-            }
-        }
-
-        schedulerCloseEmptyRooms();
-    };
+    socket.on('get-rooms', () => {
+        socket.emit('rooms', getRooms());
+    });   
 
     socket.on('join-room', ({roomId, user}) => {
         socket.user = user;
@@ -105,6 +124,7 @@ const roomControler = function(socket, io){
         } else {
             socket.emit('room-not-found'); 
         }
+        socket.broadcast.emit('rooms', getRooms());
     });
 
     socket.on('disconnect', disconnect);
@@ -266,7 +286,6 @@ const codeController = function(socket, io){
 }
 
 module.exports = {
-    homeController,
     roomControler,
     codeController,
 }
