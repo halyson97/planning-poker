@@ -7,7 +7,7 @@ import Loading from './components/Loading';
 import Disconnected from './components/Disconnected';
 
 const manager = new Manager(config.urlServer);
-const socket = manager.socket('/home');
+const socket = manager.socket('/room');
 
 const Connect: React.FC = ({ children }): ReactElement => {
   const [isConnected, setIsConnected] = React.useState(false);

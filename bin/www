@@ -31,7 +31,7 @@ const io = socketio(server, {
     origin: '*',
   }
 });
-io.of('home').on('connection', (socket) => socketController.homeController(socket, io));
+
 io.of('room').on('connection', (socket) => socketController.roomControler(socket, io));
 io.of('code').on('connection', (socket) => socketController.codeController(socket, io));
 

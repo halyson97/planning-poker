@@ -10,7 +10,7 @@ import { CardOption } from '../Room/ListUsers/cards';
 import AddRoom from './AddRoom';
 
 const manager = new Manager(config.urlServer);
-const socket = manager.socket('/home');
+const socket = manager.socket('/room');
 
 const CreateRoom: React.FC = (): ReactElement => {
   const [user, setUser] = React.useState<User>();
